@@ -2,16 +2,22 @@
   "name": "on-track-backend",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js"
   },
   "nodemonConfig": {
-    "watch": ["src"],
+    "watch": [
+      "src"
+    ],
     "ext": "js,json",
-    "ignore": ["node_modules"]
+    "ignore": [
+      "node_modules"
+    ]
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.104.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
