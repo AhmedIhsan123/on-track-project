@@ -1,0 +1,12 @@
+{
+  "name": "on-track",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --names \"frontend,backend\" --prefix-colors \"cyan,yellow\" \"npm --prefix frontend run dev\" \"npm --prefix backend run dev\"",
+    "setup": "npm install && npm --prefix frontend install && npm --prefix backend install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
