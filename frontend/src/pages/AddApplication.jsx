@@ -96,7 +96,7 @@ export default function AddApplication() {
             disabled={scraping}
           />
           <button type="submit" className="add-app-scrape-btn" disabled={scraping || !scrapeUrl.trim()}>
-            {scraping ? 'Fetching…' : 'Fetch details'}
+            {scraping ? 'Fetching… (may take a few seconds)' : 'Fetch details'}
           </button>
         </form>
         {scrapeNotice && (
