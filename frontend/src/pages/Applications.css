@@ -54,11 +54,121 @@
 }
 
 .apps-btn-signout:hover {
-  background: #f9fafb;
+  background: #f3f4f6;
 }
 
 .apps-main {
   flex: 1;
   padding: 2rem;
+}
+
+.apps-status {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.apps-error {
+  color: #dc2626;
+}
+
+.apps-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 4rem 0;
   color: #6b7280;
 }
+
+.apps-table-wrap {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.apps-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.apps-th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  background: #f9fafb;
+}
+
+.apps-th:hover {
+  color: #111;
+}
+
+.apps-th-active {
+  color: #2563eb;
+}
+
+.apps-sort-icon {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.apps-row {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.1s;
+}
+
+.apps-row:last-child {
+  border-bottom: none;
+}
+
+.apps-row:hover {
+  background: #f9fafb;
+}
+
+.apps-td {
+  padding: 0.85rem 1rem;
+  color: #111;
+  vertical-align: middle;
+}
+
+.apps-td-company {
+  font-weight: 600;
+}
+
+.apps-td-muted {
+  color: #6b7280;
+}
+
+.apps-count {
+  padding: 0.6rem 1rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  border-top: 1px solid #f3f4f6;
+  margin: 0;
+}
+
+/* Stage badges */
+.stage-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 99px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.stage-applied   { background: #dbeafe; color: #1d4ed8; }
+.stage-screen    { background: #e0e7ff; color: #4338ca; }
+.stage-interview { background: #fef3c7; color: #b45309; }
+.stage-final     { background: #fce7f3; color: #be185d; }
+.stage-offer     { background: #dcfce7; color: #15803d; }
+.stage-rejected  { background: #fee2e2; color: #b91c1c; }
+.stage-withdrawn { background: #f3f4f6; color: #6b7280; }

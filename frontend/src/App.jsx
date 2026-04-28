@@ -3,7 +3,6 @@ import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import Dashboard from './pages/Dashboard';
 import Applications from './pages/Applications';
 import AddApplication from './pages/AddApplication';
 
@@ -14,14 +13,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<Navigate to="/applications" replace />} />
           <Route
             path="/applications"
             element={
@@ -38,7 +30,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/applications" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

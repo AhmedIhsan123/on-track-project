@@ -18,7 +18,7 @@ export default function Login() {
     setLoading(true);
     try {
       await signInWithPassword(email, password);
-      navigate('/');
+      navigate('/applications');
     } catch (err) {
       setError(err.message);
     } finally {

@@ -1,4 +1,9 @@
-import { createApplication } from '../db/applications.js';
+import { getApplications, createApplication } from '../db/applications.js';
+
+export async function listApplications(req, res) {
+  const applications = await getApplications(req.user.id);
+  res.json(applications);
+}
 
 export async function addApplication(req, res) {
   const { job_title, company_name } = req.body;

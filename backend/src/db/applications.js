@@ -1,5 +1,16 @@
 import { supabase } from './supabase.js';
 
+export async function getApplications(userId) {
+  const { data, error } = await supabase
+    .from('applications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('date_applied', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
 export async function createApplication(userId, fields) {
   const { data, error } = await supabase
     .from('applications')
