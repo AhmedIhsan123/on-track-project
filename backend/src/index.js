@@ -4,6 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import { supabase } from './db/supabase.js';
 import authRouter from './routes/auth.js';
+import applicationsRouter from './routes/applications.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -20,6 +21,7 @@ app.get('/health', async (req, res) => {
 });
 
 app.use('/auth', authRouter);
+app.use('/applications', applicationsRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
