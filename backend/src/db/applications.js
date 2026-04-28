@@ -11,6 +11,31 @@ export async function getApplications(userId) {
   return data;
 }
 
+export async function getStats(userId) {
+  const { data, error } = await supabase
+    .from('applications')
+    .select('stage, date_applied')
+    .eq('user_id', userId);
+
+  if (error) throw error;
+
+  const total = data.length;
+  const byStageCounts = {};
+  const STAGES = ['applied', 'screen', 'interview', 'final', 'offer', 'rejected', 'withdrawn'];
+  for (const s of STAGES) byStageCounts[s] = 0;
+  for (const row of data) byStageCounts[row.stage] = (byStageCounts[row.stage] || 0) + 1;
+
+  const responded = ['screen', 'interview', 'final', 'offer', 'rejected'];
+  const interviewed = ['interview', 'final', 'offer'];
+  const active = ['applied', 'screen', 'interview', 'final'];
+
+  const response_rate = total ? Math.round((responded.reduce((s, k) => s + byStageCounts[k], 0) / total) * 100) : 0;
+  const interview_rate = total ? Math.round((interviewed.reduce((s, k) => s + byStageCounts[k], 0) / total) * 100) : 0;
+  const active_count = active.reduce((s, k) => s + byStageCounts[k], 0);
+
+  return { total, response_rate, interview_rate, active_count, by_stage: byStageCounts };
+}
+
 export async function getApplicationById(userId, id) {
   const { data, error } = await supabase
     .from('applications')
