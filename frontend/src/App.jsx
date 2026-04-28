@@ -1,10 +1,18 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { useAuth } from './hooks/useAuth';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Applications from './pages/Applications';
 import AddApplication from './pages/AddApplication';
+
+// Waits for auth to resolve before redirecting, so OAuth hash tokens aren't stripped
+function RootRedirect() {
+  const { session, loading } = useAuth();
+  if (loading) return null;
+  return <Navigate to={session ? '/applications' : '/login'} replace />;
+}
 
 export default function App() {
   return (
@@ -13,7 +21,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/" element={<Navigate to="/applications" replace />} />
+          <Route path="/" element={<RootRedirect />} />
           <Route
             path="/applications"
             element={
@@ -30,7 +38,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<Navigate to="/applications" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
