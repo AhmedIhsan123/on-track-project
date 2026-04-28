@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../services/api';
 import './Applications.css';
@@ -39,6 +39,7 @@ function formatDate(iso) {
 
 export default function Applications() {
   const { signOut } = useAuth();
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -109,7 +110,7 @@ export default function Applications() {
               </thead>
               <tbody>
                 {sorted.map((app) => (
-                  <tr key={app.id} className="apps-row">
+                  <tr key={app.id} className="apps-row apps-row-clickable" onClick={() => navigate(`/applications/${app.id}`)}>
                     <td className="apps-td apps-td-company">{app.company_name}</td>
                     <td className="apps-td">{app.job_title}</td>
                     <td className="apps-td">
