@@ -96,10 +96,15 @@ Update this section as work progresses.
 ### Done
 
 - [x] Project setup — monorepo, Docker Compose, environment variables
+- [x] Database — Supabase setup, create tables
+- [x] Auth — backend routes, Supabase Auth, Google + GitHub OAuth
+- [x] Frontend auth — login, signup, protected route wrapper
+- [x] Add application (manual) — form, API, save to DB
+- [x] Applications board — list all applications
 
 ### In progress
 
-- [ ] Database — Supabase setup, create tables
+- [ ] Application detail — view and edit one application
 
 ### Todo (in order)
 

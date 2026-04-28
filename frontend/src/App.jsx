@@ -1,30 +1,46 @@
-import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { useAuth } from './hooks/useAuth';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Applications from './pages/Applications';
+import AddApplication from './pages/AddApplication';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+// Waits for auth to resolve before redirecting, so OAuth hash tokens aren't stripped
+function RootRedirect() {
+  const { session, loading } = useAuth();
+  if (loading) return null;
+  return <Navigate to={session ? '/applications' : '/login'} replace />;
+}
 
 export default function App() {
-	const [health, setHealth] = useState(null);
-	const [error, setError] = useState(null);
-
-	useEffect(() => {
-		const checkHealth = async () => {
-			try {
-				const res = await fetch(`${API_URL}/health`);
-				const data = await res.json();
-				setHealth(data);
-			} catch (err) {
-				setError(err.message);
-			}
-		};
-		checkHealth();
-	}, []);
-
-	const status = health ? JSON.stringify(health) : (error ?? "checking...");
-
-	return (
-		<div>
-			<h1>On-Track</h1>
-			<p>Backend: {status}</p>
-		</div>
-	);
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/" element={<RootRedirect />} />
+          <Route
+            path="/applications"
+            element={
+              <ProtectedRoute>
+                <Applications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/applications/new"
+            element={
+              <ProtectedRoute>
+                <AddApplication />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
