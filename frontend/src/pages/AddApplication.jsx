@@ -8,27 +8,57 @@ const REMOTE_TYPES = ['remote', 'hybrid', 'onsite'];
 
 const today = new Date().toISOString().slice(0, 10);
 
+const EMPTY_FORM = {
+  job_title: '',
+  company_name: '',
+  job_url: '',
+  location: '',
+  remote_type: '',
+  salary_range: '',
+  stage: 'applied',
+  date_applied: today,
+  date_posted: '',
+  notes: '',
+};
+
 export default function AddApplication() {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const [form, setForm] = useState({
-    job_title: '',
-    company_name: '',
-    job_url: '',
-    location: '',
-    remote_type: '',
-    salary_range: '',
-    stage: 'applied',
-    date_applied: today,
-    date_posted: '',
-    notes: '',
-  });
+  const [scrapeUrl, setScrapeUrl] = useState('');
+  const [scraping, setScraping] = useState(false);
+  const [scrapeNotice, setScrapeNotice] = useState('');
+  const [form, setForm] = useState(EMPTY_FORM);
 
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  async function handleScrape(e) {
+    e.preventDefault();
+    if (!scrapeUrl.trim()) return;
+    setScraping(true);
+    setScrapeNotice('');
+    setError('');
+    try {
+      const data = await api.post('/scraper', { url: scrapeUrl });
+      setForm((prev) => ({
+        ...prev,
+        job_title: data.job_title || prev.job_title,
+        company_name: data.company_name || prev.company_name,
+        location: data.location || prev.location,
+        remote_type: data.remote_type || prev.remote_type,
+        job_url: data.job_url || prev.job_url,
+      }));
+      setScrapeNotice(data.scrape_error
+        ? 'Could not extract details from that page — fill in manually.'
+        : 'Details filled in — review and save.');
+    } catch (err) {
+      setScrapeNotice('Scraping failed — fill in manually.');
+    } finally {
+      setScraping(false);
+    }
   }
 
   async function handleSubmit(e) {
@@ -50,6 +80,30 @@ export default function AddApplication() {
       <div className="add-app-header">
         <Link to="/applications" className="add-app-back">← Applications</Link>
         <h1>Add application</h1>
+      </div>
+
+      {/* URL scraper bar */}
+      <div className="add-app-section add-app-scrape-section">
+        <h2>Paste a job listing URL</h2>
+        <p className="add-app-scrape-hint">We'll try to fill in the details automatically.</p>
+        <form onSubmit={handleScrape} className="add-app-scrape-row">
+          <input
+            className="add-app-input add-app-scrape-input"
+            type="url"
+            value={scrapeUrl}
+            onChange={(e) => setScrapeUrl(e.target.value)}
+            placeholder="https://boards.greenhouse.io/..."
+            disabled={scraping}
+          />
+          <button type="submit" className="add-app-scrape-btn" disabled={scraping || !scrapeUrl.trim()}>
+            {scraping ? 'Fetching…' : 'Fetch details'}
+          </button>
+        </form>
+        {scrapeNotice && (
+          <p className={`add-app-scrape-notice ${scrapeNotice.includes('Could not') || scrapeNotice.includes('failed') ? 'notice-warn' : 'notice-ok'}`}>
+            {scrapeNotice}
+          </p>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="add-app-form">
