@@ -103,10 +103,11 @@ Update this section as work progresses.
 - [x] Applications board — list all applications
 - [x] Application detail — view and edit one application
 - [x] Web scraper — parse job URLs, connect to add flow
+- [x] Dashboard stats — aggregate data, charts
 
 ### In progress
 
-- [ ] Dashboard stats — aggregate data, charts
+- [ ] Polish — responsive design, error handling, loading states
 
 ### Todo (in order)
 

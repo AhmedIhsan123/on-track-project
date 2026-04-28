@@ -71,7 +71,13 @@ export default function Applications() {
   return (
     <div className="apps-page">
       <header className="apps-header">
-        <h1>On-Track</h1>
+        <div className="apps-header-left">
+          <h1>On-Track</h1>
+          <nav className="apps-nav">
+            <Link to="/dashboard" className="apps-nav-link">Dashboard</Link>
+            <Link to="/applications" className="apps-nav-link apps-nav-active">Applications</Link>
+          </nav>
+        </div>
         <div className="apps-header-actions">
           <Link to="/applications/new" className="apps-btn-add">+ Add application</Link>
           <button onClick={signOut} className="apps-btn-signout">Sign out</button>

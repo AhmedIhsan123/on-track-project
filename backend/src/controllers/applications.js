@@ -1,4 +1,9 @@
-import { getApplications, getApplicationById, updateApplication, createApplication } from '../db/applications.js';
+import { getApplications, getStats, getApplicationById, updateApplication, createApplication } from '../db/applications.js';
+
+export async function listStats(req, res) {
+  const stats = await getStats(req.user.id);
+  res.json(stats);
+}
 
 export async function listApplications(req, res) {
   const applications = await getApplications(req.user.id);

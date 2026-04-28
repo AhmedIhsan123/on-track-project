@@ -9,16 +9,48 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 2rem;
+  padding: 0 2rem;
+  height: 56px;
   border-bottom: 1px solid #e5e7eb;
   background: #fff;
 }
 
+.apps-header-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
 .apps-header h1 {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #2563eb;
   margin: 0;
+}
+
+.apps-nav {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.apps-nav-link {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.apps-nav-link:hover {
+  background: #f3f4f6;
+  color: #111;
+}
+
+.apps-nav-active {
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 500;
 }
 
 .apps-header-actions {
