@@ -3,6 +3,7 @@ import 'express-async-errors';
 import express from 'express';
 import cors from 'cors';
 import { supabase } from './db/supabase.js';
+import authRouter from './routes/auth.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -17,6 +18,8 @@ app.get('/health', async (req, res) => {
     db: error ? `error: ${error.message}` : 'connected',
   });
 });
+
+app.use('/auth', authRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
