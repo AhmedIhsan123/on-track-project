@@ -98,10 +98,11 @@ Update this section as work progresses.
 - [x] Project setup — monorepo, Docker Compose, environment variables
 - [x] Database — Supabase setup, create tables
 - [x] Auth — backend routes, Supabase Auth, Google + GitHub OAuth
+- [x] Frontend auth — login, signup, protected route wrapper
 
 ### In progress
 
-- [ ] Frontend auth — login, signup, protected route wrapper
+- [ ] Add application (manual) — form, API, save to DB
 
 ### Todo (in order)
 
