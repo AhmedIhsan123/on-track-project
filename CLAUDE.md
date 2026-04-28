@@ -101,10 +101,11 @@ Update this section as work progresses.
 - [x] Frontend auth — login, signup, protected route wrapper
 - [x] Add application (manual) — form, API, save to DB
 - [x] Applications board — list all applications
+- [x] Application detail — view and edit one application
 
 ### In progress
 
-- [ ] Application detail — view and edit one application
+- [ ] Web scraper — parse job URLs, connect to add flow
 
 ### Todo (in order)
 

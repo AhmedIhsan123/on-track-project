@@ -11,6 +11,40 @@ export async function getApplications(userId) {
   return data;
 }
 
+export async function getApplicationById(userId, id) {
+  const { data, error } = await supabase
+    .from('applications')
+    .select('*')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updateApplication(userId, id, fields) {
+  const allowed = [
+    'job_title', 'company_name', 'location', 'remote_type', 'salary_range',
+    'job_description', 'job_url', 'stage', 'date_applied', 'date_posted', 'notes',
+  ];
+
+  const updates = Object.fromEntries(
+    Object.entries(fields).filter(([key]) => allowed.includes(key))
+  );
+
+  const { data, error } = await supabase
+    .from('applications')
+    .update(updates)
+    .eq('id', id)
+    .eq('user_id', userId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 export async function createApplication(userId, fields) {
   const { data, error } = await supabase
     .from('applications')

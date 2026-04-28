@@ -1,8 +1,20 @@
-import { getApplications, createApplication } from '../db/applications.js';
+import { getApplications, getApplicationById, updateApplication, createApplication } from '../db/applications.js';
 
 export async function listApplications(req, res) {
   const applications = await getApplications(req.user.id);
   res.json(applications);
+}
+
+export async function getApplication(req, res) {
+  const application = await getApplicationById(req.user.id, req.params.id);
+  if (!application) return res.status(404).json({ error: 'Application not found' });
+  res.json(application);
+}
+
+export async function editApplication(req, res) {
+  const application = await updateApplication(req.user.id, req.params.id, req.body);
+  if (!application) return res.status(404).json({ error: 'Application not found' });
+  res.json(application);
 }
 
 export async function addApplication(req, res) {

@@ -130,6 +130,10 @@
   border-bottom: none;
 }
 
+.apps-row-clickable {
+  cursor: pointer;
+}
+
 .apps-row:hover {
   background: #f9fafb;
 }

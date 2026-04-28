@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Applications from './pages/Applications';
 import AddApplication from './pages/AddApplication';
+import ApplicationDetail from './pages/ApplicationDetail';
 
 // Waits for auth to resolve before redirecting, so OAuth hash tokens aren't stripped
 function RootRedirect() {
@@ -35,6 +36,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <AddApplication />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/applications/:id"
+            element={
+              <ProtectedRoute>
+                <ApplicationDetail />
               </ProtectedRoute>
             }
           />
