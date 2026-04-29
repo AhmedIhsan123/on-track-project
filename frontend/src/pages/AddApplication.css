@@ -153,10 +153,17 @@
   min-height: 90px;
 }
 
-.add-app-error {
-  font-size: 0.875rem;
-  color: #dc2626;
+.add-app-error-box {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+}
+
+.add-app-error-msg {
   margin: 0;
+  font-size: 0.875rem;
+  color: #b91c1c;
 }
 
 .add-app-actions {
@@ -196,4 +203,14 @@
 .add-app-submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .add-app-page { padding: 1.25rem 1rem; }
+  .add-app-scrape-row { flex-wrap: wrap; }
+  .add-app-scrape-btn { width: 100%; }
+  .add-app-actions { flex-direction: column-reverse; align-items: stretch; }
+  .add-app-submit { text-align: center; }
+  .add-app-cancel { text-align: center; }
 }

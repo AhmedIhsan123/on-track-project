@@ -1,27 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 import { api } from '../services/api';
+import { AppHeader } from '../components/AppHeader';
 import './Applications.css';
 
 const STAGE_LABELS = {
-  applied: 'Applied',
-  screen: 'Phone Screen',
-  interview: 'Interview',
-  final: 'Final Round',
-  offer: 'Offer',
-  rejected: 'Rejected',
-  withdrawn: 'Withdrawn',
+  applied: 'Applied', screen: 'Phone Screen', interview: 'Interview',
+  final: 'Final Round', offer: 'Offer', rejected: 'Rejected', withdrawn: 'Withdrawn',
 };
 
 const STAGE_COLORS = {
-  applied: 'stage-applied',
-  screen: 'stage-screen',
-  interview: 'stage-interview',
-  final: 'stage-final',
-  offer: 'stage-offer',
-  rejected: 'stage-rejected',
-  withdrawn: 'stage-withdrawn',
+  applied: 'stage-applied', screen: 'stage-screen', interview: 'stage-interview',
+  final: 'stage-final', offer: 'stage-offer', rejected: 'stage-rejected', withdrawn: 'stage-withdrawn',
 };
 
 const COLUMNS = [
@@ -37,8 +27,35 @@ function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function TableSkeleton() {
+  const widths = [80, 65, 75, 55, 70];
+  return (
+    <div className="apps-table-wrap">
+      <table className="apps-table">
+        <thead>
+          <tr>
+            {COLUMNS.map((col) => (
+              <th key={col.key} className="apps-th">{col.label}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {widths.map((w, i) => (
+            <tr key={i} className="apps-row">
+              <td className="apps-td"><span className="skeleton" style={{ height: 15, width: `${w}%` }} /></td>
+              <td className="apps-td"><span className="skeleton" style={{ height: 15, width: `${w - 10}%` }} /></td>
+              <td className="apps-td"><span className="skeleton" style={{ height: 22, width: 80, borderRadius: 99 }} /></td>
+              <td className="apps-td"><span className="skeleton" style={{ height: 15, width: '55%' }} /></td>
+              <td className="apps-td"><span className="skeleton" style={{ height: 15, width: '60%' }} /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default function Applications() {
-  const { signOut } = useAuth();
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,12 +63,20 @@ export default function Applications() {
   const [sortKey, setSortKey] = useState('date_applied');
   const [sortAsc, setSortAsc] = useState(false);
 
-  useEffect(() => {
-    api.get('/applications')
-      .then(setApplications)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const data = await api.get('/applications');
+      setApplications(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => { load(); }, [load]);
 
   function handleSort(key) {
     if (key === sortKey) {
@@ -68,25 +93,23 @@ export default function Applications() {
     return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
   });
 
+  const addBtn = (
+    <Link to="/applications/new" className="app-header-btn-add">+ Add application</Link>
+  );
+
   return (
     <div className="apps-page">
-      <header className="apps-header">
-        <div className="apps-header-left">
-          <h1>On-Track</h1>
-          <nav className="apps-nav">
-            <Link to="/dashboard" className="apps-nav-link">Dashboard</Link>
-            <Link to="/applications" className="apps-nav-link apps-nav-active">Applications</Link>
-          </nav>
-        </div>
-        <div className="apps-header-actions">
-          <Link to="/applications/new" className="apps-btn-add">+ Add application</Link>
-          <button onClick={signOut} className="apps-btn-signout">Sign out</button>
-        </div>
-      </header>
+      <AppHeader active="applications" actions={addBtn} />
 
       <main className="apps-main">
-        {loading && <p className="apps-status">Loading…</p>}
-        {error && <p className="apps-status apps-error">{error}</p>}
+        {loading && <TableSkeleton />}
+
+        {!loading && error && (
+          <div className="apps-error-box">
+            <p className="apps-error-msg">Could not load applications — {error}</p>
+            <button className="apps-retry-btn" onClick={load}>Try again</button>
+          </div>
+        )}
 
         {!loading && !error && applications.length === 0 && (
           <div className="apps-empty">
@@ -116,7 +139,11 @@ export default function Applications() {
               </thead>
               <tbody>
                 {sorted.map((app) => (
-                  <tr key={app.id} className="apps-row apps-row-clickable" onClick={() => navigate(`/applications/${app.id}`)}>
+                  <tr
+                    key={app.id}
+                    className="apps-row apps-row-clickable"
+                    onClick={() => navigate(`/applications/${app.id}`)}
+                  >
                     <td className="apps-td apps-td-company">{app.company_name}</td>
                     <td className="apps-td">{app.job_title}</td>
                     <td className="apps-td">

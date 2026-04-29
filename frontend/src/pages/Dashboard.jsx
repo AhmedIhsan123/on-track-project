@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 import { api } from '../services/api';
+import { AppHeader } from '../components/AppHeader';
 import './Dashboard.css';
 
 const STAGE_LABELS = {
@@ -13,6 +13,7 @@ const STAGE_COLORS = {
   final: '#db2777', offer: '#16a34a', rejected: '#dc2626', withdrawn: '#9ca3af',
 };
 const STAGES = ['applied', 'screen', 'interview', 'final', 'offer', 'rejected', 'withdrawn'];
+const SKELETON_WIDTHS = [60, 40, 75, 30, 20, 45, 15];
 
 function StatCard({ label, value, sub }) {
   return (
@@ -26,9 +27,7 @@ function StatCard({ label, value, sub }) {
 
 function StageBar({ by_stage, total }) {
   if (!total) return <p className="dash-empty">No data yet.</p>;
-
   const max = Math.max(...Object.values(by_stage));
-
   return (
     <div className="dash-bar-chart">
       {STAGES.map((stage) => {
@@ -38,10 +37,7 @@ function StageBar({ by_stage, total }) {
           <div key={stage} className="dash-bar-row">
             <span className="dash-bar-label">{STAGE_LABELS[stage]}</span>
             <div className="dash-bar-track">
-              <div
-                className="dash-bar-fill"
-                style={{ width: `${pct}%`, background: STAGE_COLORS[stage] }}
-              />
+              <div className="dash-bar-fill" style={{ width: `${pct}%`, background: STAGE_COLORS[stage] }} />
             </div>
             <span className="dash-bar-count">{count}</span>
           </div>
@@ -51,45 +47,91 @@ function StageBar({ by_stage, total }) {
   );
 }
 
+function DashboardSkeleton() {
+  return (
+    <>
+      <section className="dash-section">
+        <div className="dash-stat-grid">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="dash-stat-card">
+              <span className="skeleton" style={{ height: 36, width: 64, marginBottom: 6 }} />
+              <span className="skeleton" style={{ height: 14, width: 120 }} />
+            </div>
+          ))}
+        </div>
+      </section>
+      <div className="dash-two-col">
+        <section className="dash-section">
+          <h2 className="dash-section-title">Applications by stage</h2>
+          <div className="dash-bar-chart">
+            {STAGES.map((s, i) => (
+              <div key={s} className="dash-bar-row">
+                <span className="skeleton" style={{ height: 12, width: 80 }} />
+                <div className="dash-bar-track">
+                  <span className="skeleton" style={{ width: `${SKELETON_WIDTHS[i]}%`, height: '100%', borderRadius: 99 }} />
+                </div>
+                <span className="skeleton" style={{ height: 12, width: 16 }} />
+              </div>
+            ))}
+          </div>
+        </section>
+        <section className="dash-section">
+          <h2 className="dash-section-title">Recent activity</h2>
+          <ul className="dash-recent-list">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <li key={i} className="dash-recent-item">
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span className="skeleton" style={{ height: 14, width: '65%' }} />
+                  <span className="skeleton" style={{ height: 11, width: '40%' }} />
+                </div>
+                <span className="skeleton" style={{ height: 22, width: 64, borderRadius: 99 }} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </>
+  );
+}
+
 export default function Dashboard() {
-  const { user, signOut } = useAuth();
   const [stats, setStats] = useState(null);
   const [recent, setRecent] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    Promise.all([
-      api.get('/applications/stats'),
-      api.get('/applications'),
-    ])
-      .then(([s, apps]) => {
-        setStats(s);
-        setRecent(apps.slice(0, 5));
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const [s, apps] = await Promise.all([
+        api.get('/applications/stats'),
+        api.get('/applications'),
+      ]);
+      setStats(s);
+      setRecent(apps.slice(0, 5));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => { load(); }, [load]);
 
   return (
     <div className="dash-page">
-      <header className="dash-header">
-        <div className="dash-header-left">
-          <h1>On-Track</h1>
-          <nav className="dash-nav">
-            <Link to="/dashboard" className="dash-nav-link dash-nav-active">Dashboard</Link>
-            <Link to="/applications" className="dash-nav-link">Applications</Link>
-          </nav>
-        </div>
-        <div className="dash-header-right">
-          <span className="dash-user-email">{user?.email}</span>
-          <button onClick={signOut} className="dash-btn-signout">Sign out</button>
-        </div>
-      </header>
+      <AppHeader active="dashboard" />
 
       <main className="dash-main">
-        {loading && <p className="dash-status">Loading…</p>}
-        {error && <p className="dash-status dash-error">{error}</p>}
+        {loading && <DashboardSkeleton />}
+
+        {!loading && error && (
+          <div className="dash-error-box">
+            <p className="dash-error-msg">Could not load dashboard — {error}</p>
+            <button className="dash-retry-btn" onClick={load}>Try again</button>
+          </div>
+        )}
 
         {!loading && !error && stats && (
           <>
@@ -133,14 +175,14 @@ export default function Dashboard() {
                 <Link to="/applications" className="dash-view-all">View all →</Link>
               </section>
             </div>
-          </>
-        )}
 
-        {!loading && !error && stats?.total === 0 && (
-          <div className="dash-onboarding">
-            <p>You haven't tracked any applications yet.</p>
-            <Link to="/applications/new" className="dash-btn-add">+ Add your first application</Link>
-          </div>
+            {stats.total === 0 && (
+              <div className="dash-onboarding">
+                <p>You haven't tracked any applications yet.</p>
+                <Link to="/applications/new" className="dash-btn-add">+ Add your first application</Link>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>
