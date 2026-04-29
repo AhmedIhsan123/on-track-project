@@ -11,42 +11,12 @@
   z-index: 10;
 }
 
-.app-header-left {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
 .app-header-logo {
   font-size: 1.2rem;
   font-weight: 700;
   color: #2563eb;
-  white-space: nowrap;
-}
-
-.app-header-nav {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.app-nav-link {
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  color: #6b7280;
   text-decoration: none;
-  transition: background 0.15s, color 0.15s;
-}
-
-.app-nav-link:hover {
-  background: #f3f4f6;
-  color: #111;
-}
-
-.app-nav-active {
-  background: #eff6ff;
-  color: #2563eb;
-  font-weight: 500;
+  white-space: nowrap;
 }
 
 .app-header-right {
@@ -72,9 +42,7 @@
   white-space: nowrap;
 }
 
-.app-header-signout:hover {
-  background: #f3f4f6;
-}
+.app-header-signout:hover { background: #f3f4f6; }
 
 .app-header-btn-add {
   padding: 0.4rem 0.9rem;
@@ -88,9 +56,7 @@
   white-space: nowrap;
 }
 
-.app-header-btn-add:hover {
-  background: #1d4ed8;
-}
+.app-header-btn-add:hover { background: #1d4ed8; }
 
 @media (max-width: 640px) {
   .app-header {
@@ -100,6 +66,5 @@
     flex-wrap: wrap;
     gap: 0.5rem;
   }
-  .app-header-left { gap: 1rem; }
   .app-header-email { display: none; }
 }

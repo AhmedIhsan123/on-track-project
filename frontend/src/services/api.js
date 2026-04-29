@@ -20,6 +20,7 @@ async function request(method, path, body) {
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
+  if (res.status === 204) return null;
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `Request failed: ${res.status}`);
   return data;
@@ -29,4 +30,5 @@ export const api = {
   get: (path) => request('GET', path),
   post: (path, body) => request('POST', path, body),
   patch: (path, body) => request('PATCH', path, body),
+  delete: (path) => request('DELETE', path),
 };

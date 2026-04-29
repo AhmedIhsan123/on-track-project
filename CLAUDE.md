@@ -93,7 +93,7 @@ applied → screen → interview → final → offer → rejected → withdrawn
 
 Update this section as work progresses.
 
-### Done
+### Done — V1 complete ✓
 
 - [x] Project setup — monorepo, Docker Compose, environment variables
 - [x] Database — Supabase setup, create tables
@@ -104,14 +104,8 @@ Update this section as work progresses.
 - [x] Application detail — view and edit one application
 - [x] Web scraper — parse job URLs, connect to add flow
 - [x] Dashboard stats — aggregate data, charts
-
-### Done (continued)
-
 - [x] Polish — responsive design, error handling, loading states
-
-### Todo (in order)
-
-11. Deploy — Vercel + Render + Supabase
+- [x] Deploy — Vercel (frontend) + Render (backend) + Supabase (DB)
 
 ---
 

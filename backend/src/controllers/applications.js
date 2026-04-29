@@ -1,4 +1,4 @@
-import { getApplications, getStats, getApplicationById, updateApplication, createApplication } from '../db/applications.js';
+import { getApplications, getStats, getApplicationById, updateApplication, createApplication, deleteApplicationById } from '../db/applications.js';
 
 export async function listStats(req, res) {
   const stats = await getStats(req.user.id);
@@ -20,6 +20,11 @@ export async function editApplication(req, res) {
   const application = await updateApplication(req.user.id, req.params.id, req.body);
   if (!application) return res.status(404).json({ error: 'Application not found' });
   res.json(application);
+}
+
+export async function removeApplication(req, res) {
+  await deleteApplicationById(req.user.id, req.params.id);
+  res.status(204).end();
 }
 
 export async function addApplication(req, res) {

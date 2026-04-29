@@ -66,8 +66,8 @@ export default function AddApplication() {
     setError('');
     setLoading(true);
     try {
-      await api.post('/applications', form);
-      navigate('/applications');
+      await api.post('/app', form);
+      navigate('/app');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -78,7 +78,7 @@ export default function AddApplication() {
   return (
     <div className="add-app-page">
       <div className="add-app-header">
-        <Link to="/applications" className="add-app-back">← Applications</Link>
+        <Link to="/app" className="add-app-back">← Applications</Link>
         <h1>Add application</h1>
       </div>
 
@@ -234,7 +234,7 @@ export default function AddApplication() {
         )}
 
         <div className="add-app-actions">
-          <Link to="/applications" className="add-app-cancel">Cancel</Link>
+          <Link to="/app" className="add-app-cancel">Cancel</Link>
           <button type="submit" className="add-app-submit" disabled={loading}>
             {loading ? 'Saving…' : 'Save application'}
           </button>
