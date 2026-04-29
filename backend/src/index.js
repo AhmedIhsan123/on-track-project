@@ -27,6 +27,19 @@ app.use("/auth", authRouter);
 app.use("/applications", applicationsRouter);
 app.use("/scraper", scraperRouter);
 
+// 404 — route not registered
+app.use((req, res) => {
+  res.status(404).json({ error: `Route not found: ${req.method} ${req.path}` });
+});
+
+// Global error handler (express-async-errors funnels thrown errors here)
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error(err);
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({ error: err.message || 'Internal server error' });
+});
+
 app.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`);
 });

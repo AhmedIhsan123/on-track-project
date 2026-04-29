@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: on-track-backend
+    runtime: docker
+    rootDir: backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
