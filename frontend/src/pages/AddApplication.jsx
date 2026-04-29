@@ -66,7 +66,7 @@ export default function AddApplication() {
     setError('');
     setLoading(true);
     try {
-      await api.post('/app', form);
+      await api.post('/applications', form);
       navigate('/app');
     } catch (err) {
       setError(err.message);
