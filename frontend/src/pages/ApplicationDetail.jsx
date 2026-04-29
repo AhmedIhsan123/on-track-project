@@ -157,13 +157,22 @@ export default function ApplicationDetail() {
     setApp(updated);
   }
 
+  async function handleDelete() {
+    if (!window.confirm(`Delete this application for ${app.job_title} at ${app.company_name}?`)) return;
+    await api.delete(`/applications/${id}`);
+    navigate('/app');
+  }
+
   if (loading) return <div className="detail-page"><p className="detail-status">Loading…</p></div>;
   if (error) return <div className="detail-page"><p className="detail-status detail-error">{error}</p></div>;
 
   return (
     <div className="detail-page">
       <div className="detail-header">
-        <Link to="/applications" className="detail-back">← Applications</Link>
+        <div className="detail-header-top">
+          <Link to="/app" className="detail-back">← Applications</Link>
+          <button className="detail-delete-btn" onClick={handleDelete}>Delete</button>
+        </div>
         <div className="detail-title-row">
           <div>
             <h1 className="detail-title">{app.job_title}</h1>

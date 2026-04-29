@@ -70,6 +70,15 @@ export async function updateApplication(userId, id, fields) {
   return data;
 }
 
+export async function deleteApplicationById(userId, id) {
+  const { error } = await supabase
+    .from('applications')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', userId);
+  if (error) throw error;
+}
+
 export async function createApplication(userId, fields) {
   const { data, error } = await supabase
     .from('applications')
