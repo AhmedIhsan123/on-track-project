@@ -10,7 +10,9 @@ import scraperRouter from "./routes/scraper.js";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*',
+}));
 app.use(express.json());
 
 app.get("/health", async (req, res) => {

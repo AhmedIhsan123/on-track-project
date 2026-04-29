@@ -227,7 +227,11 @@ export default function AddApplication() {
           />
         </div>
 
-        {error && <p className="add-app-error">{error}</p>}
+        {error && (
+          <div className="add-app-error-box">
+            <p className="add-app-error-msg">{error}</p>
+          </div>
+        )}
 
         <div className="add-app-actions">
           <Link to="/applications" className="add-app-cancel">Cancel</Link>

@@ -4,13 +4,38 @@
   padding: 2rem 1.5rem;
 }
 
-.detail-status {
-  color: #6b7280;
-  font-size: 0.9rem;
+/* Error box */
+.detail-error-box {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.detail-error {
-  color: #dc2626;
+.detail-error-msg {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #b91c1c;
+}
+
+.detail-retry-btn {
+  padding: 0.4rem 0.9rem;
+  background: #fff;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #b91c1c;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.detail-retry-btn:hover {
+  background: #fee2e2;
 }
 
 .detail-back {
@@ -175,7 +200,7 @@
   box-sizing: border-box;
 }
 
-/* Stage badges (shared with Applications page) */
+/* Stage badges */
 .stage-badge {
   display: inline-block;
   padding: 0.25rem 0.6rem;
@@ -191,3 +216,12 @@
 .stage-offer     { background: #dcfce7; color: #15803d; }
 .stage-rejected  { background: #fee2e2; color: #b91c1c; }
 .stage-withdrawn { background: #f3f4f6; color: #6b7280; }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .detail-page { padding: 1.25rem 1rem; }
+  .detail-title { font-size: 1.25rem; }
+  .detail-title-row { flex-wrap: wrap; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .detail-error-box { flex-direction: column; align-items: flex-start; }
+}

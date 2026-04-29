@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
 import './ApplicationDetail.css';
 
@@ -19,7 +19,6 @@ function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-// Editable field — shows value as text, switches to input on click
 function EditableField({ label, value, name, type = 'text', onSave, placeholder }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value ?? '');
@@ -138,27 +137,75 @@ function EditableTextarea({ label, value, name, onSave, placeholder }) {
   );
 }
 
+function DetailSkeleton() {
+  return (
+    <div className="detail-page">
+      <Link to="/applications" className="detail-back">← Applications</Link>
+      <div className="detail-header">
+        <div className="detail-title-row">
+          <div>
+            <span className="skeleton" style={{ height: 28, width: 260, marginBottom: 8, display: 'block' }} />
+            <span className="skeleton" style={{ height: 18, width: 160 }} />
+          </div>
+          <span className="skeleton" style={{ height: 28, width: 88, borderRadius: 99 }} />
+        </div>
+      </div>
+      <div className="detail-body">
+        {[3, 6, 1, 1].map((fieldCount, si) => (
+          <section key={si} className="detail-section">
+            <span className="skeleton" style={{ height: 11, width: 72, marginBottom: '1.25rem', display: 'block' }} />
+            <div className="detail-grid">
+              {Array.from({ length: fieldCount }).map((_, fi) => (
+                <div key={fi} className="detail-field">
+                  <span className="skeleton" style={{ height: 10, width: 56 }} />
+                  <span className="skeleton" style={{ height: 32, width: '100%' }} />
+                </div>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function ApplicationDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [app, setApp] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    api.get(`/applications/${id}`)
-      .then(setApp)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const data = await api.get(`/applications/${id}`);
+      setApp(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
+
+  useEffect(() => { load(); }, [load]);
 
   async function handleSave(field, value) {
     const updated = await api.patch(`/applications/${id}`, { [field]: value });
     setApp(updated);
   }
 
-  if (loading) return <div className="detail-page"><p className="detail-status">Loading…</p></div>;
-  if (error) return <div className="detail-page"><p className="detail-status detail-error">{error}</p></div>;
+  if (loading) return <DetailSkeleton />;
+
+  if (error) return (
+    <div className="detail-page">
+      <Link to="/applications" className="detail-back">← Applications</Link>
+      <div className="detail-error-box">
+        <p className="detail-error-msg">Could not load application — {error}</p>
+        <button className="detail-retry-btn" onClick={load}>Try again</button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="detail-page">

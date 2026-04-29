@@ -1,0 +1,105 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 56px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.app-header-logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2563eb;
+  white-space: nowrap;
+}
+
+.app-header-nav {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.app-nav-link {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.app-nav-link:hover {
+  background: #f3f4f6;
+  color: #111;
+}
+
+.app-nav-active {
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-header-email {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.app-header-signout {
+  padding: 0.35rem 0.75rem;
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: #374151;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.app-header-signout:hover {
+  background: #f3f4f6;
+}
+
+.app-header-btn-add {
+  padding: 0.4rem 0.9rem;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.app-header-btn-add:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    padding: 0.5rem 1rem;
+    height: auto;
+    min-height: 56px;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .app-header-left { gap: 1rem; }
+  .app-header-email { display: none; }
+}

@@ -105,22 +105,12 @@ Update this section as work progresses.
 - [x] Web scraper — parse job URLs, connect to add flow
 - [x] Dashboard stats — aggregate data, charts
 
-### In progress
+### Done (continued)
 
-- [ ] Polish — responsive design, error handling, loading states
+- [x] Polish — responsive design, error handling, loading states
 
 ### Todo (in order)
 
-1. Project setup — monorepo, Docker Compose, environment variables
-2. Database — Supabase setup, create tables
-3. Auth — backend routes, Supabase Auth, Google + GitHub OAuth
-4. Frontend auth — login, signup, protected route wrapper
-5. Add application (manual) — form, API, save to DB
-6. Applications board — list all applications
-7. Application detail — view and edit one application
-8. Web scraper — parse job URLs, connect to add flow
-9. Dashboard stats — aggregate data, charts
-10. Polish — responsive design, error handling, loading states
 11. Deploy — Vercel + Render + Supabase
 
 ---
