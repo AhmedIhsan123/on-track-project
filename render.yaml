@@ -1,10 +1,8 @@
 services:
   - type: web
     name: on-track-backend
-    runtime: node
+    runtime: docker
     rootDir: backend
-    buildCommand: npm install
-    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
