@@ -1,23 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
+:root {
+  --bg:   #0a0a0c;
+  --s1:   #0f0f12;
+  --s2:   #141418;
+  --s3:   #1a1a20;
+  --s4:   #202026;
+  --b1:   #222228;
+  --b2:   #2e2e38;
+  --t1:   #e8e8f0;
+  --t2:   #888899;
+  --t3:   #4a4a62;
+  --accent:     #3b82f6;
+  --accent-hov: #2563eb;
+  --accent-dim: rgba(59,130,246,0.12);
+  --accent-txt: #60a5fa;
+  --green:      #4ade80;
+  --red:        #f87171;
+  --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --r: 4px;
+  --tr: 0.15s ease;
+}
+
+html, body, #root { height: 100%; }
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: #111;
+  background: var(--bg);
+  color: var(--t1);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
+a { color: var(--accent-txt); }
+
+/* Stage badges — used across the whole app */
+.stage-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+  transition: filter var(--tr);
+}
+.stage-badge:hover { filter: brightness(1.2); }
+.stage-badge-lg { font-size: 12px; padding: 4px 10px; }
+.stage-applied   { background: rgba(59,130,246,0.12); color: #60a5fa; }
+.stage-screen    { background: rgba(139,92,246,0.12); color: #c084fc; }
+.stage-interview { background: rgba(245,158,11,0.12); color: #fbbf24; }
+.stage-final     { background: rgba(251,146,60,0.12); color: #fb923c; }
+.stage-offer     { background: rgba(34,197,94,0.12);  color: #4ade80; }
+.stage-rejected  { background: rgba(239,68,68,0.12);  color: #f87171; }
+.stage-withdrawn { background: rgba(74,74,98,0.12);   color: #6b6b8a; }
+
+/* Skeleton loaders */
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
 }
-
 .skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, var(--s2) 25%, var(--s3) 50%, var(--s2) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite linear;
-  border-radius: 4px;
+  border-radius: 3px;
   display: block;
 }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--t3); }

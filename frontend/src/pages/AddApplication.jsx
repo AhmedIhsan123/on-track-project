@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../services/api';
+import { Sidebar } from '../components/Sidebar';
+import '../components/Sidebar.css';
 import './AddApplication.css';
 
 const STAGES = ['applied', 'screen', 'interview', 'final', 'offer', 'rejected', 'withdrawn'];
+const STAGE_LABELS = {
+  applied: 'Applied', screen: 'Phone Screen', interview: 'Interview',
+  final: 'Final Round', offer: 'Offer', rejected: 'Rejected', withdrawn: 'Withdrawn',
+};
 const REMOTE_TYPES = ['remote', 'hybrid', 'onsite'];
 
 const today = new Date().toISOString().slice(0, 10);
@@ -51,10 +57,12 @@ export default function AddApplication() {
         remote_type: data.remote_type || prev.remote_type,
         job_url: data.job_url || prev.job_url,
       }));
-      setScrapeNotice(data.scrape_error
-        ? 'Could not extract details from that page — fill in manually.'
-        : 'Details filled in — review and save.');
-    } catch (err) {
+      setScrapeNotice(
+        data.scrape_error
+          ? 'Could not extract details from that page — fill in manually.'
+          : 'Details filled in — review and save.',
+      );
+    } catch {
       setScrapeNotice('Scraping failed — fill in manually.');
     } finally {
       setScraping(false);
@@ -75,171 +83,193 @@ export default function AddApplication() {
     }
   }
 
+  const noticeWarn =
+    scrapeNotice.includes('Could not') || scrapeNotice.includes('failed');
+
   return (
-    <div className="add-app-page">
-      <div className="add-app-header">
-        <Link to="/app" className="add-app-back">← Applications</Link>
-        <h1>Add application</h1>
-      </div>
+    <div className="app-shell">
+      <Sidebar />
+      <div className="app-main">
+        <div className="add-header">
+          <Link to="/app" className="add-back">← Overview</Link>
+          <h1 className="add-title">Add application</h1>
+        </div>
 
-      {/* URL scraper bar */}
-      <div className="add-app-section add-app-scrape-section">
-        <h2>Paste a job listing URL</h2>
-        <p className="add-app-scrape-hint">We'll try to fill in the details automatically.</p>
-        <form onSubmit={handleScrape} className="add-app-scrape-row">
-          <input
-            className="add-app-input add-app-scrape-input"
-            type="url"
-            value={scrapeUrl}
-            onChange={(e) => setScrapeUrl(e.target.value)}
-            placeholder="https://boards.greenhouse.io/..."
-            disabled={scraping}
-          />
-          <button type="submit" className="add-app-scrape-btn" disabled={scraping || !scrapeUrl.trim()}>
-            {scraping ? 'Fetching… (may take a few seconds)' : 'Fetch details'}
-          </button>
-        </form>
-        {scrapeNotice && (
-          <p className={`add-app-scrape-notice ${scrapeNotice.includes('Could not') || scrapeNotice.includes('failed') ? 'notice-warn' : 'notice-ok'}`}>
-            {scrapeNotice}
-          </p>
-        )}
-      </div>
-
-      <form onSubmit={handleSubmit} className="add-app-form">
-        <div className="add-app-section">
-          <h2>Job details</h2>
-          <div className="add-app-row">
-            <label className="add-app-label">
-              Job title <span className="required">*</span>
+        <div className="add-content">
+          {/* URL scraper */}
+          <section className="add-section add-scrape">
+            <div className="add-section-lbl">Auto-fill from URL</div>
+            <p className="add-scrape-hint">
+              Paste a job listing URL — we'll extract the details for you.
+            </p>
+            <form onSubmit={handleScrape} className="add-scrape-row">
               <input
-                className="add-app-input"
-                name="job_title"
-                value={form.job_title}
-                onChange={handleChange}
-                required
-                placeholder="e.g. Software Engineer"
-              />
-            </label>
-            <label className="add-app-label">
-              Company <span className="required">*</span>
-              <input
-                className="add-app-input"
-                name="company_name"
-                value={form.company_name}
-                onChange={handleChange}
-                required
-                placeholder="e.g. Acme Corp"
-              />
-            </label>
-          </div>
-
-          <div className="add-app-row">
-            <label className="add-app-label">
-              Job URL
-              <input
-                className="add-app-input"
-                name="job_url"
+                className="add-scrape-input"
                 type="url"
-                value={form.job_url}
-                onChange={handleChange}
-                placeholder="https://..."
+                value={scrapeUrl}
+                onChange={(e) => setScrapeUrl(e.target.value)}
+                placeholder="https://boards.greenhouse.io/..."
+                disabled={scraping}
               />
-            </label>
-            <label className="add-app-label">
-              Salary range
-              <input
-                className="add-app-input"
-                name="salary_range"
-                value={form.salary_range}
-                onChange={handleChange}
-                placeholder="e.g. $80k–$100k"
-              />
-            </label>
-          </div>
+              <button
+                type="submit"
+                className="add-scrape-btn"
+                disabled={scraping || !scrapeUrl.trim()}
+              >
+                {scraping ? 'Fetching…' : 'Fetch details'}
+              </button>
+            </form>
+            {scrapeNotice && (
+              <p className={`add-notice ${noticeWarn ? 'warn' : 'ok'}`}>
+                {noticeWarn ? '⚠' : '✓'} {scrapeNotice}
+              </p>
+            )}
+          </section>
 
-          <div className="add-app-row">
-            <label className="add-app-label">
-              Location
-              <input
-                className="add-app-input"
-                name="location"
-                value={form.location}
+          <form onSubmit={handleSubmit} className="add-form">
+            <section className="add-section">
+              <div className="add-section-lbl">Job details</div>
+              <div className="add-row">
+                <label className="add-label">
+                  Job title <span className="add-req">*</span>
+                  <input
+                    className="add-input"
+                    name="job_title"
+                    value={form.job_title}
+                    onChange={handleChange}
+                    required
+                    placeholder="e.g. Software Engineer"
+                  />
+                </label>
+                <label className="add-label">
+                  Company <span className="add-req">*</span>
+                  <input
+                    className="add-input"
+                    name="company_name"
+                    value={form.company_name}
+                    onChange={handleChange}
+                    required
+                    placeholder="e.g. Acme Corp"
+                  />
+                </label>
+              </div>
+              <div className="add-row">
+                <label className="add-label">
+                  Job URL
+                  <input
+                    className="add-input"
+                    name="job_url"
+                    type="url"
+                    value={form.job_url}
+                    onChange={handleChange}
+                    placeholder="https://..."
+                  />
+                </label>
+                <label className="add-label">
+                  Salary range
+                  <input
+                    className="add-input"
+                    name="salary_range"
+                    value={form.salary_range}
+                    onChange={handleChange}
+                    placeholder="e.g. $80k–$100k"
+                  />
+                </label>
+              </div>
+              <div className="add-row">
+                <label className="add-label">
+                  Location
+                  <input
+                    className="add-input"
+                    name="location"
+                    value={form.location}
+                    onChange={handleChange}
+                    placeholder="e.g. New York, NY"
+                  />
+                </label>
+                <label className="add-label">
+                  Work type
+                  <select
+                    className="add-input"
+                    name="remote_type"
+                    value={form.remote_type}
+                    onChange={handleChange}
+                  >
+                    <option value="">— select —</option>
+                    {REMOTE_TYPES.map((t) => (
+                      <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </section>
+
+            <section className="add-section">
+              <div className="add-section-lbl">Status</div>
+              <div className="add-row">
+                <label className="add-label">
+                  Stage
+                  <select
+                    className="add-input"
+                    name="stage"
+                    value={form.stage}
+                    onChange={handleChange}
+                  >
+                    {STAGES.map((s) => (
+                      <option key={s} value={s}>{STAGE_LABELS[s]}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="add-label">
+                  Date applied
+                  <input
+                    className="add-input"
+                    name="date_applied"
+                    type="date"
+                    value={form.date_applied}
+                    onChange={handleChange}
+                  />
+                </label>
+                <label className="add-label">
+                  Date posted
+                  <input
+                    className="add-input"
+                    name="date_posted"
+                    type="date"
+                    value={form.date_posted}
+                    onChange={handleChange}
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section className="add-section">
+              <div className="add-section-lbl">Notes</div>
+              <textarea
+                className="add-input add-textarea"
+                name="notes"
+                value={form.notes}
                 onChange={handleChange}
-                placeholder="e.g. New York, NY"
+                placeholder="Any notes about this application…"
+                rows={4}
               />
-            </label>
-            <label className="add-app-label">
-              Work type
-              <select className="add-app-input" name="remote_type" value={form.remote_type} onChange={handleChange}>
-                <option value="">— select —</option>
-                {REMOTE_TYPES.map((t) => (
-                  <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
-                ))}
-              </select>
-            </label>
-          </div>
+            </section>
+
+            {error && (
+              <div className="add-error">
+                <p>{error}</p>
+              </div>
+            )}
+
+            <div className="add-actions">
+              <Link to="/app" className="add-cancel">Cancel</Link>
+              <button type="submit" className="add-submit" disabled={loading}>
+                {loading ? 'Saving…' : 'Save application'}
+              </button>
+            </div>
+          </form>
         </div>
-
-        <div className="add-app-section">
-          <h2>Application status</h2>
-          <div className="add-app-row">
-            <label className="add-app-label">
-              Stage
-              <select className="add-app-input" name="stage" value={form.stage} onChange={handleChange}>
-                {STAGES.map((s) => (
-                  <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-                ))}
-              </select>
-            </label>
-            <label className="add-app-label">
-              Date applied
-              <input
-                className="add-app-input"
-                name="date_applied"
-                type="date"
-                value={form.date_applied}
-                onChange={handleChange}
-              />
-            </label>
-            <label className="add-app-label">
-              Date posted
-              <input
-                className="add-app-input"
-                name="date_posted"
-                type="date"
-                value={form.date_posted}
-                onChange={handleChange}
-              />
-            </label>
-          </div>
-        </div>
-
-        <div className="add-app-section">
-          <h2>Notes</h2>
-          <textarea
-            className="add-app-input add-app-textarea"
-            name="notes"
-            value={form.notes}
-            onChange={handleChange}
-            placeholder="Any notes about this application…"
-            rows={4}
-          />
-        </div>
-
-        {error && (
-          <div className="add-app-error-box">
-            <p className="add-app-error-msg">{error}</p>
-          </div>
-        )}
-
-        <div className="add-app-actions">
-          <Link to="/app" className="add-app-cancel">Cancel</Link>
-          <button type="submit" className="add-app-submit" disabled={loading}>
-            {loading ? 'Saving…' : 'Save application'}
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 }
