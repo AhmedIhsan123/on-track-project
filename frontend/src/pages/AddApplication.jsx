@@ -2,15 +2,9 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { Sidebar } from '../components/Sidebar';
+import { STAGES, STAGE_LABELS, REMOTE_TYPES } from '../constants/stages';
 import '../components/Sidebar.css';
 import './AddApplication.css';
-
-const STAGES = ['applied', 'screen', 'interview', 'final', 'offer', 'rejected', 'withdrawn'];
-const STAGE_LABELS = {
-  applied: 'Applied', screen: 'Phone Screen', interview: 'Interview',
-  final: 'Final Round', offer: 'Offer', rejected: 'Rejected', withdrawn: 'Withdrawn',
-};
-const REMOTE_TYPES = ['remote', 'hybrid', 'onsite'];
 
 const today = new Date().toISOString().slice(0, 10);
 
@@ -83,8 +77,7 @@ export default function AddApplication() {
     }
   }
 
-  const noticeWarn =
-    scrapeNotice.includes('Could not') || scrapeNotice.includes('failed');
+  const noticeWarn = scrapeNotice.includes('Could not') || scrapeNotice.includes('failed');
 
   return (
     <div className="app-shell">
@@ -96,7 +89,6 @@ export default function AddApplication() {
         </div>
 
         <div className="add-content">
-          {/* URL scraper */}
           <section className="add-section add-scrape">
             <div className="add-section-lbl">Auto-fill from URL</div>
             <p className="add-scrape-hint">

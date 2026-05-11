@@ -16,7 +16,7 @@ export async function scrape(req, res) {
   try {
     const result = await scrapeJob(url);
     res.json(result);
-  } catch (err) {
+  } catch (_err) {
     // Return a partial result so the frontend can still pre-fill the URL
     res.json({ job_title: '', company_name: '', location: '', remote_type: '', job_description: '', job_url: url, scrape_error: true });
   }

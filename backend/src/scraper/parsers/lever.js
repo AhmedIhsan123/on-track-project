@@ -29,7 +29,7 @@ export function parseLever(html, url) {
 
   const location = $('[data-qa="posting-categories"] .sort-by-location, .location').first().text().trim();
   const commitment = $('[data-qa="posting-categories"] .sort-by-commitment').first().text().trim();
-  const team = $('[data-qa="posting-categories"] .sort-by-team').first().text().trim();
+  const _team = $('[data-qa="posting-categories"] .sort-by-team').first().text().trim();
   const remote_type = inferRemoteType(`${location} ${commitment}`);
 
   const descEl = $('[data-qa="posting-description"], .section-wrapper').first();
