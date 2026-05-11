@@ -7,4 +7,9 @@ export default defineConfig({
     port: 3000,
     host: true, // bind to 0.0.0.0 so Docker port-mapping works
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./vitest.setup.js'],
+  },
 });

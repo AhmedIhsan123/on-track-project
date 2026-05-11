@@ -15,8 +15,12 @@ async function fetchHtml(url) {
   return data;
 }
 
+function hasUsefulContent(result) {
+  return !!(result.job_title && result.company_name);
+}
+
 export async function scrapeJob(url) {
-  // Greenhouse and Lever are server-rendered — fast Cheerio path
+  // Greenhouse and Lever: server-rendered, fast Cheerio path
   if (isGreenhouse(url)) {
     const html = await fetchHtml(url);
     return parseGreenhouse(html, url);
@@ -26,7 +30,16 @@ export async function scrapeJob(url) {
     return parseLever(html, url);
   }
 
-  // Everything else (Microsoft, Amazon, Google, LinkedIn, Meta, etc.)
-  // needs a real browser to execute JavaScript first
+  // Generic Cheerio pass: works for any site that embeds JSON-LD or og: meta tags.
+  // Much faster than spinning up a headless browser.
+  try {
+    const html = await fetchHtml(url);
+    const result = parseGeneric(html, url);
+    if (hasUsefulContent(result)) return result;
+  } catch {
+    // Site blocked the fetch or requires JS — fall through to Puppeteer
+  }
+
+  // Puppeteer fallback: handles JS-rendered sites (LinkedIn, Microsoft, Google, etc.)
   return scrapeWithPuppeteer(url);
 }

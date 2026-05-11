@@ -2,22 +2,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { Sidebar } from '../components/Sidebar';
+import { StageCell } from '../components/StageCell';
+import { DonutChart } from '../components/charts/DonutChart';
+import { WeeklyChart } from '../components/charts/WeeklyChart';
+import { fmtDate, fmtMonth } from '../utils/format';
 import '../components/Sidebar.css';
 import './MainApp.css';
-
-const STAGES = ['applied', 'screen', 'interview', 'final', 'offer', 'rejected', 'withdrawn'];
-const STAGE_LABELS = {
-  applied: 'Applied', screen: 'Phone Screen', interview: 'Interview',
-  final: 'Final Round', offer: 'Offer', rejected: 'Rejected', withdrawn: 'Withdrawn',
-};
-const STAGE_PILL = {
-  applied: 'stage-applied', screen: 'stage-screen', interview: 'stage-interview',
-  final: 'stage-final', offer: 'stage-offer', rejected: 'stage-rejected', withdrawn: 'stage-withdrawn',
-};
-const STAGE_HEX = {
-  applied: '#3b82f6', screen: '#8b5cf6', interview: '#f59e0b',
-  final: '#fb923c',   offer: '#22c55e',  rejected: '#ef4444', withdrawn: '#6b7280',
-};
 
 const FILTER_TABS = [
   { key: 'all',       label: 'All' },
@@ -26,119 +16,6 @@ const FILTER_TABS = [
   { key: 'interview', label: 'Interview' },
   { key: 'rejected',  label: 'Rejected' },
 ];
-
-function fmtDate(iso) {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-function fmtMonth(iso) {
-  if (!iso) return '';
-  return new Date(iso).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-}
-
-/* ─── Donut chart (conic-gradient) ─── */
-function DonutChart({ apps }) {
-  const counts = {};
-  STAGES.forEach((s) => (counts[s] = 0));
-  apps.forEach((a) => {
-    counts[a.stage] = (counts[a.stage] || 0) + 1;
-  });
-  const total = apps.length;
-
-  let accum = 0;
-  const segs = STAGES
-    .map((s) => {
-      const cnt = counts[s] || 0;
-      const pct = total ? (cnt / total) * 100 : 0;
-      const start = accum;
-      accum += pct;
-      return { s, cnt, pct, start };
-    })
-    .filter((x) => x.cnt > 0);
-
-  const grad = segs
-    .map((x) => `${STAGE_HEX[x.s]} ${x.start.toFixed(2)}% ${(x.start + x.pct).toFixed(2)}%`)
-    .join(', ');
-
-  return (
-    <div className="donut-wrap">
-      <div className="donut-ring">
-        <div
-          className="donut-ring-fill"
-          style={{ background: total ? `conic-gradient(${grad})` : 'var(--b1)' }}
-        />
-        <div className="donut-hole">
-          <span className="donut-hole-val">{total}</span>
-          <span className="donut-hole-lbl">Total</span>
-        </div>
-      </div>
-      <div className="donut-legend">
-        {segs.length === 0 ? (
-          <span className="donut-empty">No data yet.</span>
-        ) : (
-          segs.map((x) => (
-            <div key={x.s} className="donut-legend-row">
-              <span className="donut-legend-dot" style={{ background: STAGE_HEX[x.s] }} />
-              <span className="donut-legend-txt">
-                {x.cnt} {STAGE_LABELS[x.s]}
-              </span>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ─── Weekly bar chart ─── */
-function WeeklyChart({ apps }) {
-  // Group apps by ISO week (Monday-start) of date_applied for the last 6 weeks
-  function getMonday(d) {
-    const date = new Date(d);
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(date.setDate(diff));
-  }
-
-  const today = new Date();
-  const todayMonday = getMonday(today);
-  const buckets = [];
-  for (let i = 5; i >= 0; i--) {
-    const monday = new Date(todayMonday);
-    monday.setDate(todayMonday.getDate() - i * 7);
-    buckets.push({
-      key: monday.toISOString().slice(0, 10),
-      label: monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      count: 0,
-    });
-  }
-
-  apps.forEach((a) => {
-    if (!a.date_applied) return;
-    const monday = getMonday(new Date(a.date_applied));
-    const key = monday.toISOString().slice(0, 10);
-    const b = buckets.find((bb) => bb.key === key);
-    if (b) b.count += 1;
-  });
-
-  const max = Math.max(...buckets.map((b) => b.count), 1);
-
-  return (
-    <div className="weekly-bars">
-      {buckets.map((b) => (
-        <div key={b.key} className="bar-col" title={`${b.count} application${b.count !== 1 ? 's' : ''}`}>
-          <div className="bar-track">
-            <div
-              className="bar-fill"
-              style={{ height: `${(b.count / max) * 100}%` }}
-            />
-          </div>
-          <span className="bar-lbl">{b.label}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 /* ─── Skeletons ─── */
 function StatsSkeleton() {
@@ -154,6 +31,7 @@ function StatsSkeleton() {
     </div>
   );
 }
+
 function ChartsSkeleton() {
   return (
     <div className="charts-row">
@@ -168,6 +46,7 @@ function ChartsSkeleton() {
     </div>
   );
 }
+
 function TableSkeleton() {
   return (
     <div className="apps-section">
@@ -198,47 +77,6 @@ function TableSkeleton() {
         </table>
       </div>
     </div>
-  );
-}
-
-/* ─── Stage cell with inline edit ─── */
-function StageCell({ app, onUpdate }) {
-  const [editing, setEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-
-  async function handleChange(e) {
-    setSaving(true);
-    await onUpdate(app.id, e.target.value);
-    setSaving(false);
-    setEditing(false);
-  }
-
-  if (editing) {
-    return (
-      <select
-        className="stage-inline-select"
-        value={app.stage}
-        onChange={handleChange}
-        disabled={saving}
-        autoFocus
-        onBlur={() => setEditing(false)}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {STAGES.map((s) => (
-          <option key={s} value={s}>{STAGE_LABELS[s]}</option>
-        ))}
-      </select>
-    );
-  }
-
-  return (
-    <span
-      className={`stage-badge ${STAGE_PILL[app.stage]}`}
-      onClick={(e) => { e.stopPropagation(); setEditing(true); }}
-      title="Click to change stage"
-    >
-      {STAGE_LABELS[app.stage] ?? app.stage}
-    </span>
   );
 }
 
@@ -288,7 +126,6 @@ export default function MainApp() {
   const offers     = stats?.by_stage?.offer ?? 0;
   const interviews = (stats?.by_stage?.interview ?? 0) + (stats?.by_stage?.final ?? 0);
 
-  // Apps added this week for the "X this week" sub-label
   const thisWeek = (() => {
     if (!applications.length) return 0;
     const now = new Date();
@@ -333,7 +170,6 @@ export default function MainApp() {
 
           {!loading && !error && (
             <>
-              {/* Stats */}
               <div className="stats-row">
                 <div className="stat-card">
                   <div className="stat-lbl">Total</div>
@@ -357,7 +193,6 @@ export default function MainApp() {
                 </div>
               </div>
 
-              {/* Charts */}
               <div className="charts-row">
                 <div className="chart-card">
                   <div className="chart-heading">By Stage</div>
@@ -369,7 +204,6 @@ export default function MainApp() {
                 </div>
               </div>
 
-              {/* Applications */}
               <div className="apps-section">
                 <div className="apps-header">
                   <span className="apps-heading">Applications</span>
