@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
-import { useAuth } from './hooks/useAuth';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Landing from './pages/Landing';
@@ -9,12 +8,6 @@ import MainApp from './pages/MainApp';
 import AddApplication from './pages/AddApplication';
 import ApplicationDetail from './pages/ApplicationDetail';
 
-// Shows landing page to guests, redirects authenticated users to /app
-function LandingRoute() {
-  const { session, loading } = useAuth();
-  if (loading) return null;
-  return session ? <Navigate to="/app" replace /> : <Landing />;
-}
 
 // Redirects /applications/:id → /app/:id
 function LegacyDetailRedirect() {
@@ -27,7 +20,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<LandingRoute />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 

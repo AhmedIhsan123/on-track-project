@@ -46,7 +46,7 @@ export default function Signup() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-logo">on<span className="auth-logo-dot">·</span>track</h1>
+        <Link to="/" className="auth-logo">on<span className="auth-logo-dot">·</span>track</Link>
         <h2 className="auth-title">Create account</h2>
         <p className="auth-sub">Track your job search, automatically.</p>
 

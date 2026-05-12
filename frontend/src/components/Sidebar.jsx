@@ -43,7 +43,7 @@ export function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-top">
-        <Link to="/app" className="sidebar-logo">
+        <Link to="/" className="sidebar-logo">
           on<span className="sidebar-logo-dot">·</span>track
         </Link>
         <div className="sidebar-sep" />

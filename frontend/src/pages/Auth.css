@@ -13,13 +13,16 @@
 }
 
 .auth-logo {
+  display: block;
   font-family: var(--mono);
   font-size: 14px;
   font-weight: 600;
   color: var(--t1);
   margin: 0 0 2.25rem;
   letter-spacing: -0.02em;
+  text-decoration: none;
 }
+.auth-logo:hover { opacity: 0.75; }
 .auth-logo-dot { color: var(--t3); }
 
 .auth-title {
