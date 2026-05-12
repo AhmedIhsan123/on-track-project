@@ -1,4 +1,5 @@
 services:
+  # Production — deploys from main
   - type: web
     name: on-track-backend
     runtime: docker
@@ -12,3 +13,19 @@ services:
         sync: false
       - key: CORS_ORIGIN
         sync: false
+
+  # Staging — deploys from dev-claude
+  - type: web
+    name: on-track-backend-staging
+    runtime: docker
+    rootDir: backend
+    branch: dev-claude
+    envVars:
+      - key: NODE_ENV
+        value: staging
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: CORS_ORIGIN
+        value: "*"
