@@ -28,7 +28,7 @@ const FAQ = [
 
 export default function Landing() {
   const [openFaq, setOpenFaq] = useState(0);
-  const { session } = useAuth();
+  const { session, signOut } = useAuth();
 
   return (
     <div className="landing">
@@ -42,7 +42,10 @@ export default function Landing() {
         </div>
         <div className="lp-nav-ctas">
           {session ? (
-            <Link to="/app" className="lp-btn-primary">Dashboard →</Link>
+            <>
+              <button className="lp-btn-ghost" onClick={signOut}>Log out</button>
+              <Link to="/app" className="lp-btn-primary">Dashboard →</Link>
+            </>
           ) : (
             <>
               <Link to="/login" className="lp-btn-ghost">Sign in</Link>
