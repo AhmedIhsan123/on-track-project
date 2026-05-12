@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import './Landing.css';
 
 const FAQ = [
@@ -27,6 +28,7 @@ const FAQ = [
 
 export default function Landing() {
   const [openFaq, setOpenFaq] = useState(0);
+  const { session } = useAuth();
 
   return (
     <div className="landing">
@@ -39,8 +41,14 @@ export default function Landing() {
           <a href="#faq">FAQ</a>
         </div>
         <div className="lp-nav-ctas">
-          <Link to="/login" className="lp-btn-ghost">Sign in</Link>
-          <Link to="/signup" className="lp-btn-primary">Sign up free</Link>
+          {session ? (
+            <Link to="/app" className="lp-btn-primary">Dashboard →</Link>
+          ) : (
+            <>
+              <Link to="/login" className="lp-btn-ghost">Sign in</Link>
+              <Link to="/signup" className="lp-btn-primary">Sign up free</Link>
+            </>
+          )}
         </div>
       </nav>
 
@@ -60,7 +68,11 @@ export default function Landing() {
               location — and tracks your whole pipeline from first application to offer.
             </p>
             <div className="lp-hero-actions">
-              <Link to="/signup" className="lp-btn-lg lp-btn-primary-lg">Sign up free →</Link>
+              {session ? (
+                <Link to="/app" className="lp-btn-lg lp-btn-primary-lg">Go to Dashboard →</Link>
+              ) : (
+                <Link to="/signup" className="lp-btn-lg lp-btn-primary-lg">Sign up free →</Link>
+              )}
               <a href="#how" className="lp-btn-lg lp-btn-ghost-lg">How it works</a>
             </div>
             <div className="lp-hero-note">Free. No credit card. No spreadsheet.</div>
@@ -266,7 +278,11 @@ export default function Landing() {
           <h2 className="lp-h2">Stop losing track.<br />Start getting offers.</h2>
           <p>Sign up in under a minute. Paste your first job URL and we'll have it tracked before you can open a spreadsheet.</p>
           <div className="lp-cta-actions">
-            <Link to="/signup" className="lp-btn-lg lp-btn-primary-lg">Sign up free →</Link>
+            {session ? (
+              <Link to="/app" className="lp-btn-lg lp-btn-primary-lg">Go to Dashboard →</Link>
+            ) : (
+              <Link to="/signup" className="lp-btn-lg lp-btn-primary-lg">Sign up free →</Link>
+            )}
             <a href="#how" className="lp-btn-lg lp-btn-ghost-lg">See how it works</a>
           </div>
           <div className="lp-cta-note">Free forever · No credit card · No spreadsheet</div>
