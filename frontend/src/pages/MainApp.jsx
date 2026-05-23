@@ -1,12 +1,14 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import { Sidebar } from '../components/Sidebar';
+import { Navbar } from '../components/Navbar';
 import { StageCell } from '../components/StageCell';
 import { DonutChart } from '../components/charts/DonutChart';
 import { WeeklyChart } from '../components/charts/WeeklyChart';
+import { ConfirmModal } from '../components/ConfirmModal';
+import { useToast } from '../context/ToastContext';
 import { fmtDate, fmtMonth } from '../utils/format';
-import '../components/Sidebar.css';
+import '../components/Navbar.css';
 import './MainApp.css';
 
 const FILTER_TABS = [
@@ -17,15 +19,27 @@ const FILTER_TABS = [
   { key: 'rejected',  label: 'Rejected' },
 ];
 
+function TrashIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6l-1 14H6L5 6" />
+      <path d="M10 11v6M14 11v6" />
+      <path d="M9 6V4h6v2" />
+    </svg>
+  );
+}
+
 /* ─── Skeletons ─── */
 function StatsSkeleton() {
   return (
     <div className="stats-row">
       {[0, 1, 2, 3].map((i) => (
         <div key={i} className="stat-card">
-          <span className="skeleton" style={{ height: 11, width: 60, marginBottom: 12 }} />
-          <span className="skeleton" style={{ height: 32, width: 50, marginBottom: 6 }} />
-          <span className="skeleton" style={{ height: 11, width: 80 }} />
+          <span className="skeleton" style={{ height: 11, width: 60, marginBottom: 14 }} />
+          <span className="skeleton" style={{ height: 44, width: 60, marginBottom: 8 }} />
+          <span className="skeleton" style={{ height: 12, width: 80 }} />
         </div>
       ))}
     </div>
@@ -36,12 +50,12 @@ function ChartsSkeleton() {
   return (
     <div className="charts-row">
       <div className="chart-card">
-        <span className="skeleton" style={{ height: 11, width: 70, marginBottom: 16 }} />
-        <span className="skeleton" style={{ height: 96, width: 96, borderRadius: '50%' }} />
+        <span className="skeleton" style={{ height: 11, width: 70, marginBottom: 18 }} />
+        <span className="skeleton" style={{ height: 110, width: 110, borderRadius: '50%' }} />
       </div>
       <div className="chart-card">
-        <span className="skeleton" style={{ height: 11, width: 130, marginBottom: 16 }} />
-        <span className="skeleton" style={{ height: 80, width: '100%' }} />
+        <span className="skeleton" style={{ height: 11, width: 130, marginBottom: 18 }} />
+        <span className="skeleton" style={{ height: 120, width: '100%' }} />
       </div>
     </div>
   );
@@ -82,11 +96,14 @@ function TableSkeleton() {
 
 export default function MainApp() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [applications, setApplications] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all');
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -113,6 +130,22 @@ export default function MainApp() {
     api.get('/applications/stats').then(setStats).catch(() => {});
   }
 
+  async function handleDelete() {
+    if (!confirmDelete) return;
+    setDeleting(true);
+    try {
+      await api.delete(`/applications/${confirmDelete.id}`);
+      setApplications((prev) => prev.filter((a) => a.id !== confirmDelete.id));
+      api.get('/applications/stats').then(setStats).catch(() => {});
+      showToast(`Deleted ${confirmDelete.job_title} at ${confirmDelete.company_name}`);
+      setConfirmDelete(null);
+    } catch (err) {
+      showToast('Failed to delete application', 'error');
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   const filtered = applications.filter((a) => {
     if (filter === 'active')    return ['applied', 'screen', 'interview', 'final'].includes(a.stage);
     if (filter === 'offers')    return a.stage === 'offer';
@@ -133,12 +166,16 @@ export default function MainApp() {
     const monday = new Date(now);
     monday.setDate(now.getDate() - day + (day === 0 ? -6 : 1));
     monday.setHours(0, 0, 0, 0);
-    return applications.filter((a) => a.date_applied && new Date(a.date_applied) >= monday).length;
+    return applications.filter((a) => {
+      if (!a.date_applied) return false;
+      const [y, m, d] = a.date_applied.split('-').map(Number);
+      return new Date(y, m - 1, d) >= monday;
+    }).length;
   })();
 
   return (
     <div className="app-shell">
-      <Sidebar />
+      <Navbar />
       <div className="app-main">
         <div className="page-header">
           <div>
@@ -149,7 +186,6 @@ export default function MainApp() {
                 : 'Get started by adding your first application'}
             </div>
           </div>
-          <Link to="/app/new" className="btn-add-header">+ Add Application</Link>
         </div>
 
         <div className="content">
@@ -256,7 +292,15 @@ export default function MainApp() {
                             <td className="td-mono">{fmtDate(app.date_applied)}</td>
                             <td className="td-mono">{app.location || '—'}</td>
                             <td className="td-mono">{app.salary_range || '—'}</td>
-                            <td className="td-arr">→</td>
+                            <td className="td-actions" onClick={(e) => e.stopPropagation()}>
+                              <button
+                                className="tbl-delete-btn"
+                                title="Delete application"
+                                onClick={() => setConfirmDelete(app)}
+                              >
+                                <TrashIcon />
+                              </button>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -268,6 +312,17 @@ export default function MainApp() {
           )}
         </div>
       </div>
+
+      {confirmDelete && (
+        <ConfirmModal
+          title={`Delete ${confirmDelete.job_title}?`}
+          message={`${confirmDelete.company_name} · This can't be undone.`}
+          confirmLabel="Delete"
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmDelete(null)}
+          loading={deleting}
+        />
+      )}
     </div>
   );
 }

@@ -1,13 +1,15 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import { Sidebar } from '../components/Sidebar';
+import { Navbar } from '../components/Navbar';
+import { ConfirmModal } from '../components/ConfirmModal';
+import { useToast } from '../context/ToastContext';
 import { EditableField } from '../components/EditableField';
 import { EditableSelect } from '../components/EditableSelect';
 import { EditableTextarea } from '../components/EditableTextarea';
 import { STAGES, STAGE_LABELS, STAGE_PILL, REMOTE_TYPES } from '../constants/stages';
 import { formatDate } from '../utils/format';
-import '../components/Sidebar.css';
+import '../components/Navbar.css';
 import './ApplicationDetail.css';
 
 function DetailSkeleton() {
@@ -41,9 +43,11 @@ function DetailSkeleton() {
 export default function ApplicationDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [app, setApp] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const load = useCallback(async () => {
@@ -67,20 +71,21 @@ export default function ApplicationDetail() {
   }
 
   async function handleDelete() {
-    if (!window.confirm(`Delete this application for ${app.job_title} at ${app.company_name}?`)) return;
     setDeleting(true);
     try {
       await api.delete(`/applications/${id}`);
+      showToast(`Deleted ${app.job_title} at ${app.company_name}`);
       navigate('/app');
     } catch (err) {
-      setError(err.message);
+      showToast('Failed to delete application', 'error');
       setDeleting(false);
+      setShowDeleteModal(false);
     }
   }
 
   return (
     <div className="app-shell">
-      <Sidebar />
+      <Navbar />
       <div className="app-main">
         <div className="detail-page">
           {loading && <DetailSkeleton />}
@@ -97,8 +102,8 @@ export default function ApplicationDetail() {
               <div className="detail-header">
                 <div className="detail-header-top">
                   <Link to="/app" className="detail-back">← Overview</Link>
-                  <button className="detail-delete" onClick={handleDelete} disabled={deleting}>
-                    {deleting ? 'Deleting…' : 'Delete'}
+                  <button className="detail-delete" onClick={() => setShowDeleteModal(true)} disabled={deleting}>
+                    Delete
                   </button>
                 </div>
                 <h1 className="detail-title">{app.job_title}</h1>
@@ -162,6 +167,17 @@ export default function ApplicationDetail() {
           )}
         </div>
       </div>
+
+      {showDeleteModal && app && (
+        <ConfirmModal
+          title={`Delete ${app.job_title}?`}
+          message={`${app.company_name} · This can't be undone.`}
+          confirmLabel="Delete"
+          onConfirm={handleDelete}
+          onCancel={() => setShowDeleteModal(false)}
+          loading={deleting}
+        />
+      )}
     </div>
   );
 }

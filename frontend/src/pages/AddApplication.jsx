@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { Sidebar } from '../components/Sidebar';
+import { Navbar } from '../components/Navbar';
 import { STAGES, STAGE_LABELS, REMOTE_TYPES } from '../constants/stages';
-import '../components/Sidebar.css';
+import '../components/Navbar.css';
 import './AddApplication.css';
 
 const today = new Date().toISOString().slice(0, 10);
@@ -19,6 +19,7 @@ const EMPTY_FORM = {
   date_applied: today,
   date_posted: '',
   notes: '',
+  job_description: '',
 };
 
 export default function AddApplication() {
@@ -50,6 +51,10 @@ export default function AddApplication() {
         location: data.location || prev.location,
         remote_type: data.remote_type || prev.remote_type,
         job_url: data.job_url || prev.job_url,
+        salary_range: data.salary_range || prev.salary_range,
+        date_posted: data.date_posted || prev.date_posted,
+        notes: data.notes || prev.notes,
+        job_description: data.job_description || prev.job_description,
       }));
       setScrapeNotice(
         data.scrape_error
@@ -81,7 +86,7 @@ export default function AddApplication() {
 
   return (
     <div className="app-shell">
-      <Sidebar />
+      <Navbar />
       <div className="app-main">
         <div className="add-header">
           <Link to="/app" className="add-back">← Overview</Link>
