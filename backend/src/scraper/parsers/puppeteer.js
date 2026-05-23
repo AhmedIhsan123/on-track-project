@@ -94,13 +94,12 @@ export async function scrapeWithPuppeteer(url) {
 
       function formatSalary(baseSalary) {
         if (!baseSalary) return '';
-        const currency = baseSalary.currency || '';
         const value = baseSalary.value;
         if (!value) return '';
-        const fmt = (n) => Number(n).toLocaleString('en-US');
-        if (value.minValue && value.maxValue) return `${currency} ${fmt(value.minValue)} – ${fmt(value.maxValue)}`.trim();
-        if (value.value) return `${currency} ${fmt(value.value)}`.trim();
-        if (typeof value === 'number') return `${currency} ${fmt(value)}`.trim();
+        const toK = (n) => { const num = Math.round(Number(n)); return num >= 1000 ? `${Math.round(num / 1000)}k` : String(num); };
+        if (value.minValue && value.maxValue) return `$${toK(value.minValue)}-${toK(value.maxValue)}`;
+        if (value.value) return `$${toK(value.value)}`;
+        if (typeof value === 'number') return `$${toK(value)}`;
         return '';
       }
 
@@ -193,10 +192,24 @@ export async function scrapeWithPuppeteer(url) {
         ? cleanText(mainEl.innerText || mainEl.textContent).slice(0, 3000)
         : metaDesc;
 
-      // Salary from visible text
+      // Salary from visible text — normalize to $75k-85k format
       const bodyText = document.body.innerText || '';
-      const salaryMatch = bodyText.match(/\$[\d,]+(?:\s*[-–]\s*\$[\d,]+)?(?:\s*(?:k|K|USD))?(?:\s*\/\s*(?:yr|year|hour|hr))?/);
-      const salary_range = salaryMatch?.[0] || '';
+      const salaryRaw = bodyText.match(/\$[\d,]+\s*k?\s*[-–]\s*\$[\d,]+\s*k?|\$[\d,]+\s*k/i)?.[0] || '';
+      let salary_range = '';
+      if (salaryRaw && !/\/\s*h(r|our)/i.test(salaryRaw)) {
+        const parts = [];
+        const re = /\$\s*([\d,]+)\s*(k)?/gi;
+        let rm;
+        while ((rm = re.exec(salaryRaw)) !== null) {
+          let n = Number(rm[1].replace(/,/g, ''));
+          if (rm[2]) n *= 1000;
+          parts.push(n);
+        }
+        const toK2 = (n) => n >= 1000 ? `${Math.round(n / 1000)}k` : String(n);
+        if (parts.length >= 2) salary_range = `$${toK2(parts[0])}-${toK2(parts[1])}`;
+        else if (parts.length === 1) salary_range = `$${toK2(parts[0])}`;
+        else salary_range = salaryRaw;
+      }
 
       return { job_title, company_name, location, job_description, salary_range, date_posted: '', source: 'fallback' };
     }, siteSelectors);

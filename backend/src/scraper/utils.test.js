@@ -36,17 +36,17 @@ describe('formatSalary', () => {
       currency: 'USD',
       value: { '@type': 'QuantitativeValueDistribution', minValue: 80000, maxValue: 120000 },
     };
-    expect(formatSalary(sal)).toBe('USD 80,000 – 120,000');
+    expect(formatSalary(sal)).toBe('$80k-120k');
   });
 
   it('formats a single value', () => {
     const sal = { currency: '$', value: { value: 100000 } };
-    expect(formatSalary(sal)).toBe('$ 100,000');
+    expect(formatSalary(sal)).toBe('$100k');
   });
 
   it('formats a numeric value directly', () => {
     const sal = { currency: 'GBP', value: 75000 };
-    expect(formatSalary(sal)).toBe('GBP 75,000');
+    expect(formatSalary(sal)).toBe('$75k');
   });
 });
 

@@ -1,9 +1,22 @@
 export function WeeklyChart({ apps }) {
-  function getMonday(d) {
-    const date = new Date(d);
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(date.setDate(diff));
+  function parseLocal(str) {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  function getMonday(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    d.setDate(d.getDate() - day + (day === 0 ? -6 : 1));
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  function localKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   const today = new Date();
@@ -14,7 +27,7 @@ export function WeeklyChart({ apps }) {
     const monday = new Date(todayMonday);
     monday.setDate(todayMonday.getDate() - i * 7);
     buckets.push({
-      key: monday.toISOString().slice(0, 10),
+      key: localKey(monday),
       label: monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       count: 0,
     });
@@ -22,8 +35,8 @@ export function WeeklyChart({ apps }) {
 
   apps.forEach((a) => {
     if (!a.date_applied) return;
-    const monday = getMonday(new Date(a.date_applied));
-    const key = monday.toISOString().slice(0, 10);
+    const monday = getMonday(parseLocal(a.date_applied));
+    const key = localKey(monday);
     const b = buckets.find((bb) => bb.key === key);
     if (b) b.count += 1;
   });
