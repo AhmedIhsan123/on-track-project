@@ -74,21 +74,21 @@
 }
 
 .lp-h1 {
-  font-size: clamp(34px, 3.8vw, 52px);
-  font-weight: 600; line-height: 1.08;
-  letter-spacing: -1.8px; margin: 0 0 20px;
+  font-size: clamp(38px, 4.4vw, 62px);
+  font-weight: 600; line-height: 1.06;
+  letter-spacing: -2px; margin: 0 0 22px;
 }
 .lp-h1 em { font-style: italic; color: var(--accent-txt); font-weight: 300; }
 
 .lp-hero-sub {
-  font-size: 16px; color: var(--t2);
-  line-height: 1.7; max-width: 420px;
-  margin: 0 0 36px; font-weight: 300;
+  font-size: 17px; color: var(--t2);
+  line-height: 1.75; max-width: 440px;
+  margin: 0 0 40px; font-weight: 300;
 }
 .lp-hero-actions { display: flex; gap: 12px; align-items: center; }
 .lp-btn-lg {
-  padding: 11px 22px; border-radius: 5px;
-  font-family: var(--sans); font-size: 14px; font-weight: 500;
+  padding: 13px 26px; border-radius: 5px;
+  font-family: var(--sans); font-size: 15px; font-weight: 500;
   cursor: pointer; transition: all var(--tr);
   border: none; text-decoration: none;
   display: inline-flex; align-items: center; gap: 7px;
@@ -229,12 +229,12 @@
 }
 .lp-ticker-item:first-child { border-left: 1px solid var(--b1); }
 .lp-ticker-val {
-  font-family: var(--mono); font-size: 20px; font-weight: 600;
+  font-family: var(--mono); font-size: 24px; font-weight: 600;
   color: var(--t1); line-height: 1;
 }
 .lp-ticker-val .accent { color: var(--accent-txt); }
 .lp-ticker-desc {
-  font-size: 12.5px; color: var(--t2); font-weight: 300; line-height: 1.3;
+  font-size: 13.5px; color: var(--t2); font-weight: 300; line-height: 1.3;
 }
 
 /* ── Sections ── */
@@ -246,13 +246,13 @@
   text-transform: uppercase; margin-bottom: 14px;
 }
 .lp-h2 {
-  font-size: clamp(26px, 2.8vw, 38px);
-  font-weight: 600; letter-spacing: -1.2px;
-  line-height: 1.12; margin: 0 0 14px;
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 600; letter-spacing: -1.4px;
+  line-height: 1.1; margin: 0 0 16px;
 }
 .lp-section-sub {
-  font-size: 15px; color: var(--t2);
-  max-width: 480px; font-weight: 300; line-height: 1.7;
+  font-size: 16px; color: var(--t2);
+  max-width: 500px; font-weight: 300; line-height: 1.75;
 }
 
 /* ── Steps ── */
