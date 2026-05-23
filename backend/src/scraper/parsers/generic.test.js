@@ -50,7 +50,7 @@ describe('parseGeneric', () => {
   it('extracts salary range from page text', () => {
     const html = `<html><body><p>Salary: $80,000 – $120,000 / year</p></body></html>`;
     const result = parseGeneric(html, BASE_URL);
-    expect(result.salary_range).toMatch(/\$80,000/);
+    expect(result.salary_range).toBe('$80k-120k');
   });
 
   it('always includes job_url in the result', () => {
