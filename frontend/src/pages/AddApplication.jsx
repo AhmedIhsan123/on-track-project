@@ -42,8 +42,8 @@ export default function AddApplication() {
     setImporting(true);
     setImportError('');
     try {
-      const app = await api.post('/applications/from-url', { url: importUrl });
-      navigate(`/app/applications/${app.id}`);
+      await api.post('/applications/from-url', { url: importUrl });
+      navigate('/app');
     } catch (err) {
       setImportError(err.message || 'Import failed — try again or add manually.');
     } finally {

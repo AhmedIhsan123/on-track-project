@@ -60,19 +60,25 @@ function extractRequirements($) {
   return `Requirements:\n${bullets.join('\n')}`;
 }
 
+// Matches annual ranges/singles and hourly rates (which normalizeSalary converts to annual)
+const SALARY_RE = /\$[\d,.]+\s*(?:[-–]\s*\$[\d,.]+\s*)?(?:\/\s*h(?:r|our)\b|per\s+hour)|\$[\d,]+\s*k?\s*[-–]\s*\$[\d,]+\s*k?|\$[\d,]+\s*k(?:\s*[-–]\s*\$?[\d,]+\s*k?)?/i;
+
 export function parseGeneric(html, url) {
   // JSON-LD first — many ATS platforms embed it even in server-rendered HTML
   const posting = extractJsonLdPosting(html);
   if (posting) {
     const fields = postingToFields(posting, url);
     fields.remote_type = inferRemoteType(`${fields.location} ${fields.job_title}`);
+    const $ = cheerio.load(html);
     // Extract date posted from DOM if JSON-LD didn't have it
     if (!fields.date_posted) {
-      const $ = cheerio.load(html);
       fields.date_posted = extractDatePosted($);
     }
-    // Extract requirements into notes
-    const $ = cheerio.load(html);
+    // Fall back to text-based salary if JSON-LD had none
+    if (!fields.salary_range) {
+      const salaryMatch = $('body').text().match(SALARY_RE);
+      fields.salary_range = salaryMatch ? normalizeSalary(salaryMatch[0]) : '';
+    }
     fields.notes = extractRequirements($);
     return fields;
   }
@@ -105,7 +111,7 @@ export function parseGeneric(html, url) {
   ).slice(0, 3000);
 
   const pageText = $('body').text();
-  const salaryMatch = pageText.match(/\$[\d,]+\s*k?\s*[-–]\s*\$[\d,]+\s*k?|\$[\d,]+\s*k(?:\s*[-–]\s*\$?[\d,]+\s*k?)?/i);
+  const salaryMatch = pageText.match(SALARY_RE);
   const salary_range = salaryMatch ? normalizeSalary(salaryMatch[0]) : '';
 
   const date_posted = extractDatePosted($);

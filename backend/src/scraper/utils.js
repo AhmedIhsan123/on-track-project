@@ -20,26 +20,34 @@ function toK(n) {
   return num >= 1000 ? `${Math.round(num / 1000)}k` : String(num);
 }
 
+// Convert hourly rate to annual equivalent (40hr/wk × 52wk)
+function hourlyToAnnual(h) {
+  return Math.round(Number(h) * 2080);
+}
+
 // Format a JSON-LD baseSalary object into "$75k-85k" style
+// Converts hourly baseSalary (unitText: "HOUR") to annual automatically
 export function formatSalary(baseSalary) {
   if (!baseSalary) return '';
   const value = baseSalary.value;
   if (!value) return '';
+  const isHourly = /hour/i.test(baseSalary.unitText || '');
+  const convert = isHourly ? hourlyToAnnual : (n) => Math.round(Number(n));
   if (value.minValue && value.maxValue) {
-    return `$${toK(value.minValue)}-${toK(value.maxValue)}`;
+    return `$${toK(convert(value.minValue))}-${toK(convert(value.maxValue))}`;
   }
-  if (value.value) return `$${toK(value.value)}`;
-  if (typeof value === 'number') return `$${toK(value)}`;
+  if (value.value) return `$${toK(convert(value.value))}`;
+  if (typeof value === 'number') return `$${toK(convert(value))}`;
   return '';
 }
 
-// Normalize a raw salary text match (e.g. "$75,000 - $85,000/yr") into "$75k-85k"
+// Normalize a raw salary text match into "$75k-85k"
+// Hourly rates ($/hr, per hour) are converted to annual equivalent
 export function normalizeSalary(raw) {
   if (!raw) return '';
-  // Leave hourly rates as-is
-  if (/\/\s*h(r|our)/i.test(raw)) return raw.trim();
+  const isHourly = /\/\s*h(r|our)\b|per\s+hour/i.test(raw);
   const parts = [];
-  const re = /\$\s*([\d,]+)\s*(k)?/gi;
+  const re = /\$\s*([\d,.]+)\s*(k)?/gi;
   let m;
   while ((m = re.exec(raw)) !== null) {
     let n = Number(m[1].replace(/,/g, ''));
@@ -47,8 +55,9 @@ export function normalizeSalary(raw) {
     parts.push(n);
   }
   if (parts.length === 0) return raw.trim();
-  if (parts.length >= 2) return `$${toK(parts[0])}-${toK(parts[1])}`;
-  return `$${toK(parts[0])}`;
+  const vals = isHourly ? parts.map(hourlyToAnnual) : parts;
+  if (vals.length >= 2) return `$${toK(vals[0])}-${toK(vals[1])}`;
+  return `$${toK(vals[0])}`;
 }
 
 export function extractJobLocation(jobLocation) {
