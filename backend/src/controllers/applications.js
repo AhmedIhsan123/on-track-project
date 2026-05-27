@@ -45,7 +45,7 @@ export async function createApplicationFromUrl(req, res) {
   try {
     scraped = await scrapeJob(url);
   } catch {
-    scraped = {};
+    // scraping failed — proceed with empty scraped, fallbacks apply below
   }
 
   const hostname = new URL(url).hostname.replace(/^www\./, '');
