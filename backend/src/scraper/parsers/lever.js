@@ -32,6 +32,8 @@ function extractRequirements($) {
   return `Requirements:\n${bullets.join('\n')}`;
 }
 
+const SALARY_RE = /\$[\d,.]+\s*(?:[-–]\s*\$[\d,.]+\s*)?(?:\/\s*h(?:r|our)\b|per\s+hour)|\$[\d,]+\s*k?\s*[-–]\s*\$[\d,]+\s*k?|\$[\d,]+\s*k(?:\s*[-–]\s*\$?[\d,]+\s*k?)?/i;
+
 export function parseLever(html, url) {
   const posting = extractJsonLdPosting(html);
   if (posting) {
@@ -41,6 +43,10 @@ export function parseLever(html, url) {
     }
     fields.remote_type = inferRemoteType(`${fields.location} ${fields.job_title}`);
     const $ = cheerio.load(html);
+    if (!fields.salary_range) {
+      const salaryMatch = $('body').text().match(SALARY_RE);
+      fields.salary_range = salaryMatch ? normalizeSalary(salaryMatch[0]) : '';
+    }
     fields.notes = extractRequirements($);
     return fields;
   }
@@ -62,7 +68,7 @@ export function parseLever(html, url) {
   const job_description = cleanText(descEl.html() || descEl.text()).slice(0, 3000);
 
   const pageText = $('body').text();
-  const salaryMatch = pageText.match(/\$[\d,]+\s*k?\s*[-–]\s*\$[\d,]+\s*k?|\$[\d,]+\s*k/i);
+  const salaryMatch = pageText.match(SALARY_RE);
   const salary_range = salaryMatch ? normalizeSalary(salaryMatch[0]) : '';
 
   const notes = extractRequirements($);

@@ -97,9 +97,11 @@ export async function scrapeWithPuppeteer(url) {
         const value = baseSalary.value;
         if (!value) return '';
         const toK = (n) => { const num = Math.round(Number(n)); return num >= 1000 ? `${Math.round(num / 1000)}k` : String(num); };
-        if (value.minValue && value.maxValue) return `$${toK(value.minValue)}-${toK(value.maxValue)}`;
-        if (value.value) return `$${toK(value.value)}`;
-        if (typeof value === 'number') return `$${toK(value)}`;
+        const isHourly = /hour/i.test(baseSalary.unitText || '');
+        const convert = isHourly ? (n) => Math.round(Number(n) * 2080) : (n) => Math.round(Number(n));
+        if (value.minValue && value.maxValue) return `$${toK(convert(value.minValue))}-${toK(convert(value.maxValue))}`;
+        if (value.value) return `$${toK(convert(value.value))}`;
+        if (typeof value === 'number') return `$${toK(convert(value))}`;
         return '';
       }
 
@@ -192,13 +194,14 @@ export async function scrapeWithPuppeteer(url) {
         ? cleanText(mainEl.innerText || mainEl.textContent).slice(0, 3000)
         : metaDesc;
 
-      // Salary from visible text — normalize to $75k-85k format
+      // Salary from visible text — matches annual and hourly (converted to annual)
       const bodyText = document.body.innerText || '';
-      const salaryRaw = bodyText.match(/\$[\d,]+\s*k?\s*[-–]\s*\$[\d,]+\s*k?|\$[\d,]+\s*k/i)?.[0] || '';
+      const salaryRaw = bodyText.match(/\$[\d,.]+\s*(?:[-–]\s*\$[\d,.]+\s*)?(?:\/\s*h(?:r|our)\b|per\s+hour)|\$[\d,]+\s*k?\s*[-–]\s*\$[\d,]+\s*k?|\$[\d,]+\s*k(?:\s*[-–]\s*\$?[\d,]+\s*k?)?/i)?.[0] || '';
       let salary_range = '';
-      if (salaryRaw && !/\/\s*h(r|our)/i.test(salaryRaw)) {
+      if (salaryRaw) {
+        const isHourly = /\/\s*h(?:r|our)\b|per\s+hour/i.test(salaryRaw);
         const parts = [];
-        const re = /\$\s*([\d,]+)\s*(k)?/gi;
+        const re = /\$\s*([\d,.]+)\s*(k)?/gi;
         let rm;
         while ((rm = re.exec(salaryRaw)) !== null) {
           let n = Number(rm[1].replace(/,/g, ''));
@@ -206,8 +209,9 @@ export async function scrapeWithPuppeteer(url) {
           parts.push(n);
         }
         const toK2 = (n) => n >= 1000 ? `${Math.round(n / 1000)}k` : String(n);
-        if (parts.length >= 2) salary_range = `$${toK2(parts[0])}-${toK2(parts[1])}`;
-        else if (parts.length === 1) salary_range = `$${toK2(parts[0])}`;
+        const vals = isHourly ? parts.map((h) => Math.round(h * 2080)) : parts;
+        if (vals.length >= 2) salary_range = `$${toK2(vals[0])}-${toK2(vals[1])}`;
+        else if (vals.length === 1) salary_range = `$${toK2(vals[0])}`;
         else salary_range = salaryRaw;
       }
 

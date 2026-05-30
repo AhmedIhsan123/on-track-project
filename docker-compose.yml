@@ -1,11 +1,9 @@
-version: '3.9'
-
 services:
   backend:
     build:
       context: ./backend
     ports:
-      - '3001:3001'
+      - '3636:3636'
     volumes:
       - ./backend:/app
       - /app/node_modules

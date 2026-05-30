@@ -1,4 +1,5 @@
 import { createContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabase';
 
 export const AuthContext = createContext(null);
@@ -23,6 +24,7 @@ async function syncUserWithBackend(session) {
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(undefined); // undefined = still loading
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Load initial session
@@ -64,6 +66,7 @@ export function AuthProvider({ children }) {
   async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    navigate('/');
   }
 
   const loading = session === undefined;
