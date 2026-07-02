@@ -63,6 +63,13 @@ export function AuthProvider({ children }) {
     if (error) throw error;
   }
 
+  async function forgotPassword(email) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) throw error;
+  }
+
   async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
@@ -72,7 +79,7 @@ export function AuthProvider({ children }) {
   const loading = session === undefined;
 
   return (
-    <AuthContext.Provider value={{ session, user, loading, signInWithPassword, signUp, signInWithOAuth, signOut }}>
+    <AuthContext.Provider value={{ session, user, loading, signInWithPassword, signUp, signInWithOAuth, signOut, forgotPassword }}>
       {children}
     </AuthContext.Provider>
   );

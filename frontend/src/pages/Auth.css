@@ -150,6 +150,18 @@
 }
 .auth-switch a:hover { text-decoration: underline; }
 
+.auth-success {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  font-size: 14px;
+  color: var(--t2);
+  line-height: 1.6;
+  margin: 1rem 0;
+}
+.auth-success strong { color: var(--t1); }
+
 @media (max-width: 480px) {
   .auth-oauth { grid-template-columns: 1fr; }
 }
