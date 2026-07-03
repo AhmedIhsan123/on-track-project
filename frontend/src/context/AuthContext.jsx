@@ -70,6 +70,11 @@ export function AuthProvider({ children }) {
     if (error) throw error;
   }
 
+  async function updatePassword(newPassword) {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+  }
+
   async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
@@ -79,7 +84,7 @@ export function AuthProvider({ children }) {
   const loading = session === undefined;
 
   return (
-    <AuthContext.Provider value={{ session, user, loading, signInWithPassword, signUp, signInWithOAuth, signOut, forgotPassword }}>
+    <AuthContext.Provider value={{ session, user, loading, signInWithPassword, signUp, signInWithOAuth, signOut, forgotPassword, updatePassword }}>
       {children}
     </AuthContext.Provider>
   );
