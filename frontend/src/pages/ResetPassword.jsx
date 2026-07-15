@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import './Auth.css';
@@ -11,6 +11,16 @@ export default function ResetPassword() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [linkInvalid, setLinkInvalid] = useState(false);
+
+  useEffect(() => {
+    // Supabase redirects expired/already-used recovery links back here with
+    // the failure reason in the hash fragment (e.g. #error=access_denied&error_code=otp_expired).
+    const params = new URLSearchParams(window.location.hash.slice(1));
+    if (params.get('error')) {
+      setLinkInvalid(true);
+    }
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -39,9 +49,16 @@ export default function ResetPassword() {
           on<span className="auth-logo-dot">·</span>track
         </Link>
         <h2 className="auth-title">Set a new password</h2>
-        <p className="auth-sub">Choose a new password for your account.</p>
+        {!linkInvalid && <p className="auth-sub">Choose a new password for your account.</p>}
 
-        {done ? (
+        {linkInvalid ? (
+          <div className="auth-success">
+            <p>This reset link is invalid or has expired.</p>
+            <p>
+              <Link to="/forgot-password">Request a new one</Link>.
+            </p>
+          </div>
+        ) : done ? (
           <div className="auth-success">
             <p>Your password has been updated.</p>
             <p>
