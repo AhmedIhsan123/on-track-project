@@ -107,6 +107,11 @@ Update this section as work progresses.
 - [x] Polish — responsive design, error handling, loading states
 - [x] Deploy — Vercel (frontend) + Render (backend) + Supabase (DB)
 
+### Post-V1 additions
+
+- [x] Forgot password flow — request page + reset page, PKCE flow
+- [x] Login/Signup page updates
+
 ---
 
 ## Important rules for Claude Code
@@ -129,10 +134,10 @@ SUPABASE_URL=
 SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 JWT_SECRET=
-PORT=3001
+PORT=3636
 
 # Frontend (Vite — must start with VITE_)
-VITE_API_URL=http://localhost:3001
+VITE_API_URL=http://localhost:3636
 VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
 ```
