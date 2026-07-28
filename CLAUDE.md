@@ -43,10 +43,10 @@ on-track/
 - Use `async/await`, not `.then()` chains
 - Use `const` and `let`, never `var`
 - Use named exports, not default exports (except React page components)
-- Keep files small and focused — one responsibility per file
+- One responsibility per file. Treat ~150 lines as the signal to ask "should this split?" — not a hard cap, just the point where a file is probably doing more than one job
 - Use environment variables for all secrets and config — never hardcode
 - Always handle errors — no silent failures
-- Write comments for anything non-obvious
+- Comments explain *why*, never *what* — the code already says what it does. Only add a comment for a non-obvious constraint, a workaround, or a reason a reader couldn't infer from the code itself. If removing a comment wouldn't confuse anyone, don't write it
 
 ### Frontend conventions
 
@@ -116,12 +116,24 @@ Update this section as work progresses.
 
 ## Important rules for Claude Code
 
-- Always ask before deleting any file
-- Always ask before making large structural changes
-- Keep the PLAN.md and this CLAUDE.md up to date as things get built
-- If something is unclear, ask — do not guess and move forward
-- Prefer small, testable commits over large sweeping changes
-- The user (the developer) makes all product decisions — Claude Code implements them
+### Git / PR workflow
+
+- Every change goes on its own branch and through a PR — including docs-only and config-only fixes. No direct commits to `main`, no exceptions for "it's tiny."
+- Branch naming: `type/short-description` (e.g. `fix/scraper-timeout`, `feat/csv-export`, `docs/readme-update`). Use `feat`, `fix`, `docs`, `polish`, `chore`, or `test` as the type. Don't use personal-name branches like `dev-ahmed`/`dev-claude` going forward — they don't communicate what the branch does.
+- Prefer small, testable commits over large sweeping changes.
+- Always ask before deleting any file.
+- Always ask before making large structural changes (schema changes, moving/renaming directories, swapping a library or service).
+
+### Decision autonomy
+
+- The user makes all product and scope decisions — always ask first, with no "it's obviously fine" exception. This covers: whether a feature is in scope, whether something is "done enough" to ship, and any tradeoff between two reasonable implementations.
+- If something is unclear, ask — do not guess and move forward.
+- Implementation details that don't change behavior or scope (variable names, which existing util to reuse, file layout within a module) don't need sign-off.
+
+### Doc maintenance
+
+- CLAUDE.md and PLAN.md are updated **in the same PR** as any change that adds a feature, changes a config value (ports, env vars, URLs), or changes scope — not as a follow-up cleanup later.
+- At the start of a new session, don't trust CLAUDE.md's claims (env vars, ports, the done/in-progress checklist) at face value — cross-check against `git log --oneline` and the actual config files first. This repo's docs have drifted from `main` before.
 
 ---
 

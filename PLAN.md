@@ -30,15 +30,14 @@ Applied → Phone Screen → Interview → Final Round → Offer → Rejected / 
 
 ## Pages
 
-| Page               | Route             | Access        | Description                       |
-| ------------------ | ----------------- | ------------- | --------------------------------- |
-| Landing            | /                 | Public        | Marketing page, CTA to sign up    |
-| Sign Up            | /signup           | Public        | Email/password, Google, GitHub    |
-| Login              | /login            | Public        | Email/password, Google, GitHub    |
-| Dashboard          | /dashboard        | Auth required | Stats overview, recent activity   |
-| Applications board | /applications     | Auth required | All jobs, filterable and sortable |
-| Application detail | /applications/:id | Auth required | Full detail for one job           |
-| Add application    | /applications/new | Auth required | Paste URL or fill manually        |
+| Page               | Route      | Access        | Description                       |
+| ------------------ | ---------- | ------------- | ---------------------------------- |
+| Landing            | /          | Public        | Marketing page, CTA to sign up    |
+| Sign Up            | /signup    | Public        | Email/password, Google, GitHub    |
+| Login              | /login     | Public        | Email/password, Google, GitHub    |
+| Dashboard / Board  | /app       | Auth required | Stats overview + all applications |
+| Add application    | /app/new   | Auth required | Paste URL or fill manually        |
+| Application detail | /app/:id   | Auth required | Full detail for one job           |
 
 ---
 
@@ -96,7 +95,9 @@ Applied → Phone Screen → Interview → Final Round → Offer → Rejected / 
 
 ---
 
-## Features — Version 2 (future)
+## Features — Version 2 (not planned)
+
+V1 is the finish line for this project. None of the items below are scheduled — they're recorded for reference only and should not be started unless explicitly requested.
 
 - Gmail listener — scan inbox for replies from companies and auto-update status
 - Browser extension — one-click "Add to On-Track" from any job listing page
@@ -104,6 +105,20 @@ Applied → Phone Screen → Interview → Final Round → Offer → Rejected / 
 - Notes and reminders — set follow-up reminders per application
 - Advanced analytics — timeline charts, response time averages
 - Export to CSV
+
+---
+
+## Definition of Done — Public Launch
+
+This is the actual roadmap right now: closing out this checklist is what "done" means before showing the project to friends. Each item is its own branch + PR.
+
+- [ ] **Deployment sanity** — confirm the live Vercel + Render + Supabase deployment works end-to-end (signup, login, add application via URL, dashboard), not just local Docker
+- [ ] **Cleanup pass** — no leftover debug `console.log`s, no dead code, no stale TODOs
+- [ ] **Error handling / empty states** — every page handles loading, error, and empty-data states gracefully
+- [ ] **Responsive check** — mobile and desktop pass on every page
+- [ ] **Security pass** — no secrets committed, `.env.example` accurate, JWT/session handling reviewed
+- [ ] **README accuracy** — setup instructions work end-to-end for a stranger cloning the repo
+- [ ] **Final QA** — manual walkthrough of every page and flow
 
 ---
 
