@@ -118,8 +118,8 @@ Update this section as work progresses.
 
 ### Git / PR workflow
 
-- Every change goes on its own branch and through a PR — including docs-only and config-only fixes. No direct commits to `main`, no exceptions for "it's tiny."
-- Branch naming: `type/short-description` (e.g. `fix/scraper-timeout`, `feat/csv-export`, `docs/readme-update`). Use `feat`, `fix`, `docs`, `polish`, `chore`, or `test` as the type. Don't use personal-name branches like `dev-ahmed`/`dev-claude` going forward — they don't communicate what the branch does.
+- Claude Code always works on a single shared branch: `dev-claude`. Check it out at the start of a task (creating it from `main` if it doesn't already exist) rather than branching per task. CI already runs on pushes to this branch (see `.github/workflows/ci.yml`).
+- Every batch of work on `dev-claude` goes through a PR into `main` — no direct commits to `main`. Review before merge is manual: the user reads the diff and merges it themselves; GitHub's required-approval count stays at 0 since a solo repo owner can't approve their own PR. CI passing (Backend + Frontend checks, enforced by branch protection on `main`) is the automated gate; the user's read-through is the human one.
 - Prefer small, testable commits over large sweeping changes.
 - Always ask before deleting any file.
 - Always ask before making large structural changes (schema changes, moving/renaming directories, swapping a library or service).
